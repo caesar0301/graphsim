@@ -7,6 +7,7 @@ from typedecorator import params, returns
 
 __all__ = [ 'simrank', 'simrank_bipartite' ]
 
+
 @params(G=nx.Graph, r=float, max_iter=long, eps=float)
 def simrank(G, r=0.8, max_iter=100, eps=1e-4):
     """ Algorithm of G. Jeh and J. Widom. SimRank: A Measure
@@ -102,7 +103,7 @@ if __name__ == '__main__':
     G.add_edges_from([(1,2), (1,3), (2,4), (4,1), (3,5), (5,3)])
     print simrank(G)
 
-    # Example bipartie graph of cake-bakers
+    # Example bipartie graph of cake-bakers in the paper
     G = nx.DiGraph()
     G.add_edges_from([(1,3), (1,4), (1,5), (2,4), (2,5), (2,6)])
     print simrank_bipartite(G)
