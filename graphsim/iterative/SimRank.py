@@ -51,6 +51,8 @@ def simrank(G, r=0.8, max_iter=100, eps=1e-4):
                 s_uv = sum([sim_prev[nodes_i[u_n]][nodes_i[v_n]] for u_n, v_n in itertools.product(u_ns, v_ns)])
                 sim[nodes_i[u]][nodes_i[v]] = (r * s_uv) / (len(u_ns) * len(v_ns))
 
+    print("Converge after %d iterations (eps=%f)." % (i, eps))
+
     return sim
 
 
@@ -94,6 +96,8 @@ def simrank_bipartite(G, r=0.8, max_iter=100, eps=1e-4):
         _update_partite(lns)
         _update_partite(rns)
 
+    print("Converge after %d iterations (eps=%f)." % (i, eps))
+
     return sim
 
 
@@ -101,9 +105,9 @@ if __name__ == '__main__':
     # Example university web graph in the paper
     G = nx.DiGraph()
     G.add_edges_from([(1,2), (1,3), (2,4), (4,1), (3,5), (5,3)])
-    print simrank(G)
+    print(simrank(G))
 
     # Example bipartie graph of cake-bakers in the paper
     G = nx.DiGraph()
     G.add_edges_from([(1,3), (1,4), (1,5), (2,4), (2,5), (2,6)])
-    print simrank_bipartite(G)
+    print(simrank_bipartite(G))

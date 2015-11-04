@@ -16,7 +16,8 @@ def normalized(a, axis=0, order=2):
 
 @params(G=nx.DiGraph, max_iter=long, eps=float)
 def hits(G, max_iter=100, eps=1e-4):
-    """Calculate the hub and authority scores for nodes in a graph.
+    """HITS algorithm:
+    calculate the hub and authority scores for nodes in a graph.
 
     Return
     ------
@@ -24,7 +25,8 @@ def hits(G, max_iter=100, eps=1e-4):
 
     Reference
     ---------
-    Kleinberg, Jon M. "Authoritative Sources in a Hyperlinked Environment." JACM, 1999.
+    [1] Kleinberg, Jon M. "Authoritative Sources in a Hyperlinked
+        Environment." JACM, 1999.
     """
     N = len(G.nodes())
     A = nx.adjacency_matrix(G).todense()
@@ -40,6 +42,8 @@ def hits(G, max_iter=100, eps=1e-4):
             break
         ha_prev = np.copy(ha)
         ha = normalized(np.dot(M, ha_prev))
+
+    print("Converge after %d iterations (eps=%f)." % (i, eps))
 
     return np.reshape(ha, newshape=(N, 2), order=1)
 
