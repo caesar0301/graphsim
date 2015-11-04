@@ -2,11 +2,11 @@
 ASCOS similarity measure
 """
 #!/usr/bin/env python
-#    Copyright (C) 2004-2010 by
-#    Hung-Hsuan Chen <hhchen@psu.edu>
-#    All rights reserved.
-#    BSD license.
-#    NetworkX:http://networkx.lanl.gov/.
+# Copyright (C) 2004-2010 by
+# Hung-Hsuan Chen <hhchen@psu.edu>
+# All rights reserved.
+# BSD license.
+# NetworkX:http://networkx.lanl.gov/.
 __author__ = """Hung-Hsuan Chen (hhchen@psu.edu)"""
 
 import copy
@@ -18,32 +18,32 @@ __all__ = ['ascos']
 
 
 def ascos(G, c=0.9, max_iter=100, is_weighted=False, remove_neighbors=False, remove_self=False, dump_process=False):
-  """Return the ASCOS similarity between nodes
+    """Return the ASCOS similarity between nodes
 
     Parameters
     -----------
     G: graph
-        A NetworkX graph
+      A NetworkX graph
     c: float, 0 < c <= 1
-        The number represents the relative importance between in-direct neighbors
-        and direct neighbors
+      The number represents the relative importance between in-direct neighbors
+      and direct neighbors
     max_iter: integer
-        The number specifies the maximum number of iterations for ASCOS
-        calculation
+      The number specifies the maximum number of iterations for ASCOS
+      calculation
     is_weighted: boolean
-        Whether use weighted ASCOS or not
+      Whether use weighted ASCOS or not
     remove_neighbors: boolean
-        if true, the similarity value between neighbor nodes is set to zero
+      if true, the similarity value between neighbor nodes is set to zero
     remove_self: boolean
-        if true, the similarity value between a node and itself is set to zero
+      if true, the similarity value between a node and itself is set to zero
     dump_process: boolean
-        if true, the calculation process is dumped
+      if true, the calculation process is dumped
 
     Returns
     -------
     node_ids : list of node ids
     sim : numpy matrix
-        sim[i,j] is the similarity value between node_ids[i] and node_ids[j]
+      sim[i,j] is the similarity value between node_ids[i] and node_ids[j]
 
     Examples
     --------

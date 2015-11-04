@@ -1,9 +1,16 @@
+#!/usr/bin/env python
+# Copyright (C) 2015 by
+# Xiaming Chen <chen_xm@sjtu.edu.cn>
+# All rights reserved.
+# BSD license.
 import itertools
 
 import numpy as np
 import networkx as nx
 from typedecorator import params, returns
 
+__author__ = "Xiaming Chen"
+__email__ = "chen_xm@sjtu.edu.cn"
 
 __all__ = [ 'hits' ]
 
