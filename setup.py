@@ -1,7 +1,7 @@
 import os
 import sys
 from setuptools import setup
-from treelib import __version__
+from graphsim import __version__
 
 setup(
     name = "graphsim",
