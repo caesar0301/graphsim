@@ -1,0 +1,4 @@
+include README*
+include LICENSE*
+include MANIFEST*
+recursive-include graphsim *.py
