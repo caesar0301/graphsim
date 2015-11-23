@@ -10,7 +10,7 @@ import itertools, copy
 
 import numpy as np
 import networkx as nx
-from typedecorator import params, returns
+from typedecorator import params
 
 __author__ = "Xiaming Chen"
 __email__ = "chen_xm@sjtu.edu.cn"
@@ -31,8 +31,8 @@ def _coherence(s1, s2):
 
 
 def _converged(nsim, nsim_prev, esim, esim_prev, eps=1e-4):
-    if np.allclose(nsim, nsim_prev, atol=eps) \
-        and np.allclose(esim, esim_prev, atol=eps):
+    if np.allclose(nsim, nsim_prev, atol=eps) and \
+            np.allclose(esim, esim_prev, atol=eps):
         return True
     return False
 
@@ -43,7 +43,14 @@ def _normalized(a, axis=0, order=2):
     return a / l2
 
 
+def _mask_lower_values(m, tol=1e-6):
+    m[abs(m) < tol] = 0.0
+    return m
+
+
 def _graph_elements(G, node_attribute='weight', edge_attribute='weight'):
+    """ Generate strength matrices and node-edge indexes mapping of nodes and edges.
+    """
     nodes = G.nodes()
     edges = G.edges()
     V = len(nodes)
@@ -94,8 +101,8 @@ def _graph_elements(G, node_attribute='weight', edge_attribute='weight'):
     return node_strength_mat, node_edge_map, edge_strength_mat, edge_node_map
 
 
-@params(G1=nx.DiGraph, G2=nx.DiGraph, node_attribute=str, edge_attribute=str, max_iter=int, eps=float)
-def tacsim(G1, G2, node_attribute='weight', edge_attribute='weight', max_iter=100, eps=1e-4):
+@params(G1=nx.DiGraph, G2=nx.DiGraph, node_attribute=str, edge_attribute=str, max_iter=int, eps=float, tol=float)
+def tacsim(G1, G2, node_attribute='weight', edge_attribute='weight', max_iter=100, eps=1e-4, tol=1e-6):
     """ Calculate the TACSim measure of two attributed, directed graph.
     """
     if isinstance(G1, nx.MultiDiGraph) or isinstance(G2, nx.MultiDiGraph):
@@ -103,9 +110,6 @@ def tacsim(G1, G2, node_attribute='weight', edge_attribute='weight', max_iter=10
 
     nsm1, nem1, esm1, enm1 = _graph_elements(G1, node_attribute, edge_attribute)
     nsm2, nem2, esm2, enm2 = _graph_elements(G2, node_attribute, edge_attribute)
-
-    A = nx.adjacency_matrix(G1).todense()
-    B = nx.adjacency_matrix(G2).todense()
 
     N = len(G1.nodes())
     M = len(G2.nodes())
@@ -124,7 +128,7 @@ def tacsim(G1, G2, node_attribute='weight', edge_attribute='weight', max_iter=10
         nsim_prev = copy.deepcopy(nsim)
         esim_prev = copy.deepcopy(esim)
 
-        # Update node similarity
+        # Update node similarity, in and out node neighbors
         for i, j in itertools.product(range(N), range(M)):
             u_in = [u for u in range(N) if nsm1[u,i] >= 0]
             v_in = [v for v in range(M) if nsm2[v,j] >= 0]
@@ -140,7 +144,7 @@ def tacsim(G1, G2, node_attribute='weight', edge_attribute='weight', max_iter=10
                 v_edge = nem2[j][v]
                 nsim[i][j] += 0.5 * _coherence(nsm1[i,u], nsm2[j,v]) * (nsim_prev[u,v] + esim_prev[u_edge][v_edge])
 
-        # Update edge similarity
+        # Update edge similarity, in and out edge neighbors
         for i, j in itertools.product(range(P), range(Q)):
             u_in = [u for u in range(P) if esm1[u,i] >= 0]
             v_in = [v for v in range(Q) if esm2[v,j] >= 0]
@@ -161,22 +165,22 @@ def tacsim(G1, G2, node_attribute='weight', edge_attribute='weight', max_iter=10
 
     print("Converge after %d iterations (eps=%f)." % (itrc, eps))
 
-    return nsim, esim
+    return _mask_lower_values(nsim, tol), _mask_lower_values(esim, tol)
 
 
 if __name__ == '__main__':
     G1 = nx.DiGraph()
-    G1.add_weighted_edges_from([('a','b',10), ('a','c',10), ('b','c',10), ('c','d',20)])
-    G1.node['a']['weight'] = 3
-    G1.node['b']['weight'] = 1
-    G1.node['c']['weight'] = 5
-    G1.node['d']['weight'] = 1
+    G1.add_weighted_edges_from([(1,0,8), (0,2,12), (1,2,10), (2,3,15)])
+    G1.node[0]['weight'] = 1
+    G1.node[1]['weight'] = 1
+    G1.node[2]['weight'] = 5
+    G1.node[3]['weight'] = 1
 
     G2 = nx.DiGraph()
-    G2.add_weighted_edges_from([('a','b',20), ('b','c',10)])
-    G2.node['a']['weight'] = 1
-    G2.node['b']['weight'] = 3
-    G2.node['c']['weight'] = 1
+    G2.add_weighted_edges_from([(0,1,15), (1,2,10)])
+    G2.node[0]['weight'] = 1
+    G2.node[1]['weight'] = 3
+    G2.node[2]['weight'] = 1
 
     nsim, esim = tacsim(G1, G2)
     print nsim

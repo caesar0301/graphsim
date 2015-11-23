@@ -6,6 +6,12 @@ Graph similarity algorithms based on NetworkX.
 **BSD License**
 
 
+Install
+-------
+
+    $ pip install -U graphsim
+
+
 Usage
 -----
 
