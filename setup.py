@@ -1,6 +1,6 @@
 import os
 import sys
-from setuptools import setup
+from setuptools import setup, find_packages
 from graphsim import __version__
 from graphsim import __author__
 from graphsim import __email__
@@ -14,7 +14,7 @@ setup(
     description = 'Graph similarity algorithms based on NetworkX.',
     long_description = open(os.path.join(os.path.dirname(__file__), 'README.md')).read(),
     license = "BSC License",
-    packages = ['graphsim'],
+    packages = find_packages(),
     keywords = ['graph', 'graph similarity', 'graph matching'],
     classifiers = [
         'Development Status :: 4 - Beta',

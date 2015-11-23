@@ -1,4 +1,9 @@
-include README*
-include LICENSE*
-include MANIFEST*
-recursive-include graphsim *.py
+include README.md
+include LICENSE
+include MANIFEST.in
+include setup.py
+include setup.cfg
+
+global-exclude *~
+global-exclude *.pyc
+global-exclude .git
