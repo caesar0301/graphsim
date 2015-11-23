@@ -2,13 +2,15 @@ import os
 import sys
 from setuptools import setup
 from graphsim import __version__
+from graphsim import __author__
+from graphsim import __email__
 
 setup(
     name = "graphsim",
     version = __version__,
     url = 'https://github.com/caesar0301/graphsim',
-    author = 'Xiaming Chen',
-    author_email = 'chenxm35@gmail.com',
+    author = __author__,
+    author_email = __email__,
     description = 'Graph similarity algorithms based on NetworkX.',
     long_description = open(os.path.join(os.path.dirname(__file__), 'README.md')).read(),
     license = "BSC License",
