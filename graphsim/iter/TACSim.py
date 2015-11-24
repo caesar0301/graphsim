@@ -15,7 +15,7 @@ from typedecorator import params
 __author__ = "Xiaming Chen"
 __email__ = "chen_xm@sjtu.edu.cn"
 
-__all__ = [ 'tacsim' ]
+__all__ = [ 'tacsim', 'tacsim_combined', 'normalized', 'node_edge_adjacency' ]
 
 
 def _strength_nodes(nw1, nw2, ew):
@@ -37,7 +37,7 @@ def _converged(nsim, nsim_prev, esim, esim_prev, eps=1e-4):
     return False
 
 
-def _normalized(a, axis=0, order=2):
+def normalized(a, axis=None, order=2):
     l2 = np.atleast_1d(np.linalg.norm(a, order, axis))
     l2[l2==0] = 1
     return a / l2
@@ -67,12 +67,12 @@ def _graph_elements(G, node_attribute='weight', edge_attribute='weight'):
     for i, n in enumerate(nodes):
         node_id_lookup_tbl[n] = i
         node_weight_vec[i] = G.node[n][node_attribute]
-    node_weight_vec = _normalized(node_weight_vec)
+    node_weight_vec = normalized(node_weight_vec)
 
     for i, e in enumerate(edges):
         edge_id_lookup_tbl[e] = i
         edge_weight_vec[i] = G.edge[e[0]][e[1]][edge_attribute]
-    edge_weight_vec = _normalized(edge_weight_vec)
+    edge_weight_vec = normalized(edge_weight_vec)
 
     for e in edges:
         n0, n1 = node_id_lookup_tbl[e[0]], node_id_lookup_tbl[e[1]]
@@ -160,12 +160,49 @@ def tacsim(G1, G2, node_attribute='weight', edge_attribute='weight', max_iter=10
                 v_node = enm2[j][v]
                 esim[i][j] += 0.5 * _coherence(esm1[i,u], esm2[j,v]) * (esim_prev[u,v] + nsim_prev[u_node][v_node])
 
-        nsim = _normalized(nsim)
-        esim = _normalized(esim)
+        nsim = normalized(nsim)
+        esim = normalized(esim)
 
     print("Converge after %d iterations (eps=%f)." % (itrc, eps))
 
     return _mask_lower_values(nsim, tol), _mask_lower_values(esim, tol)
+
+
+@params(G=nx.DiGraph)
+def node_edge_adjacency(G):
+    """ Node-edge adjacency matrix: source nodes
+    """
+    edges = G.edges()
+    nodes = G.nodes()
+    node_index = {}
+    for i in range(0, len(nodes)):
+        node_index[nodes[i]] = i
+
+    ne_src_mat = np.zeros([len(nodes), len(edges)])
+    ne_dst_mat = np.zeros([len(nodes), len(edges)])
+
+    for i in range(0, len(edges)):
+        s, t = edges[i]
+        ne_src_mat[node_index[s]][i] = 1
+        ne_dst_mat[node_index[t]][i] = 1
+
+    return ne_src_mat, ne_dst_mat
+
+
+@params(G1=nx.DiGraph, G2=nx.DiGraph, node_attribute=str, edge_attribute=str, lamb=float, norm=bool)
+def tacsim_combined(G1, G2, node_attribute='weight', edge_attribute='weight', lamb = 0.5, norm=True):
+    """ Combined similarity based on original tacsim scores. Refer to paper Mesos.
+    """
+    # X: node similarity; Y: edge similarity
+    X, Y = tacsim(G1, G2, node_attribute, edge_attribute)
+    As, At = node_edge_adjacency(G1)
+    Bs, Bt = node_edge_adjacency(G2)
+    Z = Y + lamb * np.dot(np.dot(As.T, X), Bs) + (1-lamb) * np.dot(np.dot(At.T, X), Bt)
+    print Z
+    if norm:
+        return normalized(Z)
+    else:
+        return Z
 
 
 if __name__ == '__main__':
@@ -185,3 +222,5 @@ if __name__ == '__main__':
     nsim, esim = tacsim(G1, G2)
     print nsim
     print esim
+
+    print tacsim_combined(G1, G2)
