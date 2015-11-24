@@ -26,7 +26,16 @@ Supported algorithms
 * `gs.hits`: the hub and authority scores for nodes, by Kleinberg.
 * `gs.nsim_hs03`: node-node similarity with mismatch penalty, by Heymans et al.
 * `gs.simrank`: A Measure of Structural-Context Similarity, by Jeh et al.
+* `gs.simrank_bipartite`: SimRank for bipartite graphs, by Jeh et al.
 * `gs.tacsim`: Topology-Attributes Coupling Simmilarity, by Xiaming Chen et al.
+* `gs.tacsim_conbined`: A combined topology-attributes coupling simmilarity, by Xiaming Chen et al.
+
+
+Supported utilities
+-------------------
+
+* `gs.normalized`: L2 normalization of vectors, matrices or arrays.
+* `gs.node_edge_adjacency`: Obtain node-edge adjacency matrices in source and dest directions.
 
 
 Author
