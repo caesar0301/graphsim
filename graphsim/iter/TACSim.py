@@ -48,7 +48,7 @@ def _mask_lower_values(m, tol=1e-6):
     return m
 
 
-def _graph_elements(G, node_attribute='weight', edge_attribute='weight'):
+def _graph_elements(G, node_attribute='weight', edge_attribute='weight', dummy_eps=1e-3):
     """ Generate strength matrices and node-edge indexes mapping of nodes and edges.
     """
     nodes = G.nodes()
@@ -66,12 +66,24 @@ def _graph_elements(G, node_attribute='weight', edge_attribute='weight'):
 
     for i, n in enumerate(nodes):
         node_id_lookup_tbl[n] = i
-        node_weight_vec[i] = G.node[n][node_attribute]
+        try:
+            node_weight_vec[i] = G.node[n][node_attribute]
+            if node_weight_vec[i] < 0: # to fix dummy nodes
+                node_weight_vec[i] = dummy_eps
+        except KeyError:
+            node_weight_vec[i] = 1
+
     node_weight_vec = normalized(node_weight_vec)
 
     for i, e in enumerate(edges):
         edge_id_lookup_tbl[e] = i
-        edge_weight_vec[i] = G.edge[e[0]][e[1]][edge_attribute]
+        try:
+            edge_weight_vec[i] = G.edge[e[0]][e[1]][edge_attribute]
+            if edge_weight_vec[i] <= 0: # to fix dummy edges
+                edge_weight_vec[i] = dummy_eps
+        except KeyError:
+            edge_weight_vec[i] = 1
+
     edge_weight_vec = normalized(edge_weight_vec)
 
     for e in edges:
@@ -198,7 +210,6 @@ def tacsim_combined(G1, G2, node_attribute='weight', edge_attribute='weight', la
     As, At = node_edge_adjacency(G1)
     Bs, Bt = node_edge_adjacency(G2)
     Z = Y + lamb * np.dot(np.dot(As.T, X), Bs) + (1-lamb) * np.dot(np.dot(At.T, X), Bt)
-    print Z
     if norm:
         return normalized(Z)
     else:
@@ -220,7 +231,6 @@ if __name__ == '__main__':
     G2.node[2]['weight'] = 1
 
     nsim, esim = tacsim(G1, G2)
-    print nsim
-    print esim
+    print nsim; print esim
 
     print tacsim_combined(G1, G2)
