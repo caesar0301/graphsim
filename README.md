@@ -28,7 +28,7 @@ Supported algorithms
 * `gs.simrank`: A Measure of Structural-Context Similarity, by Jeh et al.
 * `gs.simrank_bipartite`: SimRank for bipartite graphs, by Jeh et al.
 * `gs.tacsim`: Topology-Attributes Coupling Simmilarity, by Xiaming Chen et al.
-* `gs.tacsim_conbined`: A combined topology-attributes coupling simmilarity, by Xiaming Chen et al.
+* `gs.tacsim_combined`: A combined topology-attributes coupling simmilarity, by Xiaming Chen et al.
 
 
 Supported utilities
