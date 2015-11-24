@@ -36,7 +36,9 @@ def simrank(G, r=0.8, max_iter=100, eps=1e-4):
         directed = True
 
     nodes = G.nodes()
-    nodes_i = {k: v for(k, v) in [(nodes[i], i) for i in range(0, len(nodes))]}
+    nodes_i = {}
+    for (k, v) in [(nodes[i], i) for i in range(0, len(nodes))]:
+        nodes_i[k] = v
 
     sim_prev = np.zeros(len(nodes))
     sim = np.identity(len(nodes))
