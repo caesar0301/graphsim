@@ -411,3 +411,93 @@ int tacsim(MatrixInt *g1_nnadj, MatrixInt *g1_eeadj, MatrixDouble *g1_nn_strengt
     
     return 0;
 }
+
+/**
+ * Export interface of tacsim algorithm.
+ */
+int calculate_tacsim(int **A, double *Anw, double *Aew, int Anode, int Aedge,
+                     int **B, double *Bnw, double *Bew, int Bnode, int Bedge,
+                     double ***nsim, double ***esim) {
+
+    // create a new graph
+    MatrixInt *graph = allocate_matrix_int(Anode, Aedge, -1);
+    MatrixInt *graph_eeadj;
+    VectorDouble *node_weights = allocate_vector_double(Anode, -1);
+    VectorDouble *edge_weights = allocate_vector_double(Aedge, -1);
+    MatrixDouble *nn_strength_mat = allocate_matrix_double(Anode, Anode, -1);
+    MatrixDouble *ee_strength_mat = allocate_matrix_double(Aedge, Aedge, -1);
+    
+    for (int i = 0; i<graph->h; i++) {
+        for(int j = 0; j<graph->w; j++) {
+            graph->m[i][j] = A[i][j];
+        }
+    }
+    
+    for (int i = 0; i < node_weights->l; i++)
+        node_weights->v[i] = Anw[i];
+    
+    for (int i = 0; i < edge_weights->l; i++)
+        edge_weights->v[i] = Aew[i];
+    
+    normalize_vector(&(node_weights->v), node_weights->l);
+    normalize_vector(&(edge_weights->v), edge_weights->l);
+    
+    graph_eeadj = get_edge_adjacency(&graph, Aedge);
+    
+    graph_elements(graph, node_weights, &nn_strength_mat, graph_eeadj, edge_weights, &ee_strength_mat);
+    
+    free_vector_double(node_weights);
+    free_vector_double(edge_weights);
+    
+    // create another graph
+    MatrixInt *graph2 = allocate_matrix_int(Bnode, Bnode, -1);
+    MatrixInt *graph_eeadj2;
+    VectorDouble *node_weights2 = allocate_vector_double(Bnode, -1);
+    VectorDouble *edge_weights2 = allocate_vector_double(Bedge, -1);
+    MatrixDouble *nn_strength_mat2 = allocate_matrix_double(Bnode, Bnode, -1);
+    MatrixDouble *ee_strength_mat2 = allocate_matrix_double(Bedge, Bedge, -1);
+    
+    for (int i = 0; i<graph2->h; i++) {
+        for(int j = 0; j<graph2->w; j++) {
+            graph2->m[i][j] = B[i][j];
+        }
+    }
+    
+    for (int i = 0; i < node_weights2->l; i++)
+        node_weights2->v[i] = Bnw[i];
+    
+    for (int i = 0; i < edge_weights2->l; i++)
+        edge_weights2->v[i] = Bew[i];
+    
+    normalize_vector(&(node_weights2->v), node_weights2->l);
+    normalize_vector(&(edge_weights2->v), edge_weights2->l);
+
+    graph_eeadj2 = get_edge_adjacency(&graph2, Bedge);
+
+    graph_elements(graph2, node_weights2, &nn_strength_mat2, graph_eeadj2, edge_weights2, &ee_strength_mat2);
+    
+    free_vector_double(node_weights2);
+    free_vector_double(edge_weights2);
+    
+    MatrixDouble *nn_sim = allocate_matrix_double(Anode, Bnode, 1);
+    MatrixDouble *ee_sim = allocate_matrix_double(Aedge, Bedge, 1);
+    
+    tacsim(graph, graph_eeadj, nn_strength_mat, ee_strength_mat,
+           graph2, graph_eeadj2, nn_strength_mat2, ee_strength_mat2,
+           &nn_sim, &ee_sim, 100, 1e-4, 1e-6);
+    
+    free_matrix_int(graph);
+    free_matrix_int(graph_eeadj);
+    free_matrix_double(nn_strength_mat);
+    free_matrix_double(ee_strength_mat);
+    
+    free_matrix_int(graph2);
+    free_matrix_int(graph_eeadj2);
+    free_matrix_double(nn_strength_mat2);
+    free_matrix_double(ee_strength_mat2);
+    
+    *nsim = nn_sim->m;
+    *esim = ee_sim->m;
+    
+    return 0;
+}

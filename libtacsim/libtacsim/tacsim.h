@@ -57,4 +57,8 @@ int tacsim(MatrixInt *g1_nnadj, MatrixInt *g1_eeadj, MatrixDouble *g1_nn_strengt
            MatrixInt *g2_nnadj, MatrixInt *g2_eeadj, MatrixDouble *g2_nn_strength_mat, MatrixDouble *g2_ee_strength_mat,
            MatrixDouble **nn_simmat, MatrixDouble **ee_simmat, int max_iter, double eps, double tolerance);
 
+int calculate_tacsim(int **A, double *Anw, double *Aew, int Anode, int Aedge,
+                     int **B, double *Bnw, double *Bew, int Bnode, int Bedge,
+                     double ***nsim, double ***esim);
+
 #endif /* tacsim_h */
