@@ -6,11 +6,15 @@ import shutil
 
 libdir = os.path.dirname(os.path.realpath('__file__'))
 
+prgname = 'test_tacsim'
 libname = 'libtacsim'
 srcfiles = [os.path.join(libdir, 'libtacsim/tacsim.c')]
 
 Library(libname, srcfiles)
 SharedLibrary(libname, srcfiles)
+
+srcfiles.append(os.path.join(libdir, 'libtacsim/main.c'))
+Program(prgname, srcfiles)
 
 if sys.platform.startswith('linux') or \
     sys.platform.startswith('freebsd'):
