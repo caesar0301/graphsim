@@ -113,6 +113,7 @@ def _graph_elements(G, node_attribute='weight', edge_attribute='weight', dummy_e
     return node_strength_mat, node_edge_map, edge_strength_mat, edge_node_map
 
 
+
 @params(G1=nx.DiGraph, G2=nx.DiGraph, node_attribute=str, edge_attribute=str, max_iter=int, eps=float, tol=float)
 def tacsim(G1, G2, node_attribute='weight', edge_attribute='weight', max_iter=100, eps=1e-4, tol=1e-6):
     """ Calculate the TACSim measure of two attributed, directed graph.
@@ -234,3 +235,4 @@ if __name__ == '__main__':
     print nsim; print esim
 
     print tacsim_combined(G1, G2)
+    print tacsim_combined(G2, G1)
