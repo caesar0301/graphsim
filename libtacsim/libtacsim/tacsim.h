@@ -61,4 +61,6 @@ int calculate_tacsim(int **A, double *Anw, double *Aew, int Anode, int Aedge,
                      int **B, double *Bnw, double *Bew, int Bnode, int Bedge,
                      double ***nsim, double ***esim);
 
+int calculate_tacsim_self(int **A, double *Anw, double *Aew, int Anode, int Aedge, double ***nsim, double ***esim);
+
 #endif /* tacsim_h */

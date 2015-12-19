@@ -4,9 +4,6 @@
 
 int main(int argc, const char * argv[]) {
     
-    double **nsim;
-    double **esim;
-    
     int A[4][4] = {{-1,-1,0,-1}, {1,-1,2,-1}, {-1,-1,-1,3}, {-1,-1,-1,-1}};
     int Anw[4] = {1,1,5,1};
     int Aew[4] = {12,8,10,15};
@@ -51,6 +48,10 @@ int main(int argc, const char * argv[]) {
     for (int i = 0; i < edge_weights2->l; i++)
         edge_weights2->v[i] = Bew[i];
     
+    double **nsim;
+    double **esim;
+    
+    // Similarity of two graphs
     calculate_tacsim(graph->m, node_weights->v, edge_weights->v, Anode, Aedge,
                      graph2->m, node_weights2->v, edge_weights2->v, Bnode, Bedge,
                      &nsim, &esim);
@@ -66,6 +67,25 @@ int main(int argc, const char * argv[]) {
     printf("EE Sim\n");
     for (int i = 0; i < Aedge; i++) {
         for(int j = 0; j < Bedge; j++) {
+            printf("%d,%d,%f\n", i, j, esim[i][j]);
+        }
+    }
+    printf("\n");
+    
+    // Self-similarity of a graph
+    calculate_tacsim_self(graph->m, node_weights->v, edge_weights->v, Anode, Aedge, &nsim, &esim);
+    
+    printf("NN SelfSim\n");
+    for (int i = 0; i < Anode; i++) {
+        for(int j = 0; j < Anode; j++) {
+            printf("%d,%d,%f\n", i, j, nsim[i][j]);
+        }
+    }
+    printf("\n");
+    
+    printf("EE SelfSim\n");
+    for (int i = 0; i < Aedge; i++) {
+        for(int j = 0; j < Aedge; j++) {
             printf("%d,%d,%f\n", i, j, esim[i][j]);
         }
     }

@@ -501,3 +501,56 @@ int calculate_tacsim(int **A, double *Anw, double *Aew, int Anode, int Aedge,
     
     return 0;
 }
+
+/**
+ * Calculate the self-similarity via TACSim algrithm.
+ */
+int calculate_tacsim_self(int **A, double *Anw, double *Aew, int Anode, int Aedge, double ***nsim, double ***esim) {
+    
+    // create a new graph
+    MatrixInt *graph = allocate_matrix_int(Anode, Aedge, -1);
+    MatrixInt *graph_eeadj;
+    VectorDouble *node_weights = allocate_vector_double(Anode, -1);
+    VectorDouble *edge_weights = allocate_vector_double(Aedge, -1);
+    MatrixDouble *nn_strength_mat = allocate_matrix_double(Anode, Anode, -1);
+    MatrixDouble *ee_strength_mat = allocate_matrix_double(Aedge, Aedge, -1);
+    
+    for (int i = 0; i<graph->h; i++) {
+        for(int j = 0; j<graph->w; j++) {
+            graph->m[i][j] = A[i][j];
+        }
+    }
+    
+    for (int i = 0; i < node_weights->l; i++)
+        node_weights->v[i] = Anw[i];
+    
+    for (int i = 0; i < edge_weights->l; i++)
+        edge_weights->v[i] = Aew[i];
+    
+    normalize_vector(&(node_weights->v), node_weights->l);
+    normalize_vector(&(edge_weights->v), edge_weights->l);
+    
+    graph_eeadj = get_edge_adjacency(&graph, Aedge);
+    
+    graph_elements(graph, node_weights, &nn_strength_mat, graph_eeadj, edge_weights, &ee_strength_mat);
+    
+    free_vector_double(node_weights);
+    free_vector_double(edge_weights);
+    
+    MatrixDouble *nn_sim = allocate_matrix_double(Anode, Anode, 1);
+    MatrixDouble *ee_sim = allocate_matrix_double(Aedge, Aedge, 1);
+    
+    tacsim(graph, graph_eeadj, nn_strength_mat, ee_strength_mat,
+           graph, graph_eeadj, nn_strength_mat, ee_strength_mat,
+           &nn_sim, &ee_sim, 100, 1e-4, 1e-6);
+    
+    free_matrix_int(graph);
+    free_matrix_int(graph_eeadj);
+    free_matrix_double(nn_strength_mat);
+    free_matrix_double(ee_strength_mat);
+    
+    *nsim = nn_sim->m;
+    *esim = ee_sim->m;
+    
+    return 0;
+}
