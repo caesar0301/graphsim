@@ -417,7 +417,8 @@ int tacsim(MatrixInt *g1_nnadj, MatrixInt *g1_eeadj, MatrixDouble *g1_nn_strengt
  */
 int calculate_tacsim(int **A, double *Anw, double *Aew, int Anode, int Aedge,
                      int **B, double *Bnw, double *Bew, int Bnode, int Bedge,
-                     double ***nsim, double ***esim) {
+                     double ***nsim, double ***esim,
+                     int max_iter, double eps, double tol) {
 
     // create a new graph
     MatrixInt *graph = allocate_matrix_int(Anode, Aedge, -1);
@@ -484,7 +485,7 @@ int calculate_tacsim(int **A, double *Anw, double *Aew, int Anode, int Aedge,
     
     tacsim(graph, graph_eeadj, nn_strength_mat, ee_strength_mat,
            graph2, graph_eeadj2, nn_strength_mat2, ee_strength_mat2,
-           &nn_sim, &ee_sim, 100, 1e-4, 1e-6);
+           &nn_sim, &ee_sim, max_iter, eps, tol);
     
     free_matrix_int(graph);
     free_matrix_int(graph_eeadj);
@@ -505,7 +506,9 @@ int calculate_tacsim(int **A, double *Anw, double *Aew, int Anode, int Aedge,
 /**
  * Calculate the self-similarity via TACSim algrithm.
  */
-int calculate_tacsim_self(int **A, double *Anw, double *Aew, int Anode, int Aedge, double ***nsim, double ***esim) {
+int calculate_tacsim_self(int **A, double *Anw, double *Aew, int Anode, int Aedge,
+                          double ***nsim, double ***esim,
+                          int max_iter, double eps, double tol) {
     
     // create a new graph
     MatrixInt *graph = allocate_matrix_int(Anode, Aedge, -1);
@@ -542,7 +545,7 @@ int calculate_tacsim_self(int **A, double *Anw, double *Aew, int Anode, int Aedg
     
     tacsim(graph, graph_eeadj, nn_strength_mat, ee_strength_mat,
            graph, graph_eeadj, nn_strength_mat, ee_strength_mat,
-           &nn_sim, &ee_sim, 100, 1e-4, 1e-6);
+           &nn_sim, &ee_sim, max_iter, eps, tol);
     
     free_matrix_int(graph);
     free_matrix_int(graph_eeadj);

@@ -54,7 +54,7 @@ int main(int argc, const char * argv[]) {
     // Similarity of two graphs
     calculate_tacsim(graph->m, node_weights->v, edge_weights->v, Anode, Aedge,
                      graph2->m, node_weights2->v, edge_weights2->v, Bnode, Bedge,
-                     &nsim, &esim);
+                     &nsim, &esim, 100, 1e-4, 1e-6);
     
     printf("NN Sim\n");
     for (int i = 0; i < Anode; i++) {
@@ -73,7 +73,8 @@ int main(int argc, const char * argv[]) {
     printf("\n");
     
     // Self-similarity of a graph
-    calculate_tacsim_self(graph->m, node_weights->v, edge_weights->v, Anode, Aedge, &nsim, &esim);
+    calculate_tacsim_self(graph->m, node_weights->v, edge_weights->v, Anode, Aedge,
+                          &nsim, &esim, 100, 1e-4, 1e-6);
     
     printf("NN SelfSim\n");
     for (int i = 0; i < Anode; i++) {

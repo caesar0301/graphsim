@@ -15,7 +15,7 @@ from typedecorator import params
 __author__ = "Xiaming Chen"
 __email__ = "chen_xm@sjtu.edu.cn"
 
-__all__ = [ 'tacsim', 'tacsim_combined', 'normalized', 'node_edge_adjacency' ]
+__all__ = [ 'tacsim', 'tacsim_self', 'tacsim_combined', 'normalized', 'node_edge_adjacency' ]
 
 
 def _strength_nodes(nw1, nw2, ew):
@@ -113,16 +113,19 @@ def _graph_elements(G, node_attribute='weight', edge_attribute='weight', dummy_e
     return node_strength_mat, node_edge_map, edge_strength_mat, edge_node_map
 
 
-
-@params(G1=nx.DiGraph, G2=nx.DiGraph, node_attribute=str, edge_attribute=str, max_iter=int, eps=float, tol=float)
-def tacsim(G1, G2, node_attribute='weight', edge_attribute='weight', max_iter=100, eps=1e-4, tol=1e-6):
+def tacsim(G1, G2=None, node_attribute='weight', edge_attribute='weight', max_iter=100, eps=1e-4, tol=1e-6):
     """ Calculate the TACSim measure of two attributed, directed graph.
     """
-    if isinstance(G1, nx.MultiDiGraph) or isinstance(G2, nx.MultiDiGraph):
+    if isinstance(G1, nx.MultiDiGraph):
         assert("MultiDiGraph is not supported by TACSim.")
 
     nsm1, nem1, esm1, enm1 = _graph_elements(G1, node_attribute, edge_attribute)
-    nsm2, nem2, esm2, enm2 = _graph_elements(G2, node_attribute, edge_attribute)
+
+    if G2 is None:
+        nsm2, nem2, esm2, enm2 = nsm1, nem1, esm1, enm1
+        G2 = G1
+    else:
+        nsm2, nem2, esm2, enm2 = _graph_elements(G2, node_attribute, edge_attribute)
 
     N = len(G1.nodes())
     M = len(G2.nodes())
@@ -181,6 +184,12 @@ def tacsim(G1, G2, node_attribute='weight', edge_attribute='weight', max_iter=10
     return _mask_lower_values(nsim, tol), _mask_lower_values(esim, tol)
 
 
+def tacsim_self(G, node_attribute='weight', edge_attribute='weight', max_iter=100, eps=1e-4, tol=1e-6):
+    """ Calculate the self-similarity with TACSim
+    """
+    return tacsim(G, None, node_attribute, edge_attribute, max_iter, eps, tol)
+
+
 @params(G=nx.DiGraph)
 def node_edge_adjacency(G):
     """ Node-edge adjacency matrix: source nodes
@@ -202,15 +211,20 @@ def node_edge_adjacency(G):
     return ne_src_mat, ne_dst_mat
 
 
-@params(G1=nx.DiGraph, G2=nx.DiGraph, node_attribute=str, edge_attribute=str, lamb=float, norm=bool)
-def tacsim_combined(G1, G2, node_attribute='weight', edge_attribute='weight', lamb = 0.5, norm=True):
+def tacsim_combined(G1, G2=None, node_attribute='weight', edge_attribute='weight', lamb = 0.5, norm=True):
     """ Combined similarity based on original tacsim scores. Refer to paper Mesos.
     """
     # X: node similarity; Y: edge similarity
     X, Y = tacsim(G1, G2, node_attribute, edge_attribute)
+
     As, At = node_edge_adjacency(G1)
-    Bs, Bt = node_edge_adjacency(G2)
+    if G2 is None:
+        Bs, Bt = As, At
+    else:
+        Bs, Bt = node_edge_adjacency(G2)
+
     Z = Y + lamb * np.dot(np.dot(As.T, X), Bs) + (1-lamb) * np.dot(np.dot(At.T, X), Bt)
+
     if norm:
         return normalized(Z)
     else:
@@ -231,8 +245,7 @@ if __name__ == '__main__':
     G2.node[1]['weight'] = 3
     G2.node[2]['weight'] = 1
 
-    nsim, esim = tacsim(G1, G2)
-    print nsim; print esim
+    print tacsim(G1, G2)
+    print tacsim_self(G1)
 
     print tacsim_combined(G1, G2)
-    print tacsim_combined(G2, G1)

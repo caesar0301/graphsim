@@ -10,20 +10,15 @@ prgname = 'test_tacsim'
 libname = 'libtacsim'
 srcfiles = [os.path.join(libdir, 'libtacsim/tacsim.c')]
 
-Library(libname, srcfiles)
-SharedLibrary(libname, srcfiles)
+env = Environment()
+
+staticlib = env.Library(libname, srcfiles)
+sharedlib = env.SharedLibrary(libname, srcfiles)
 
 srcfiles.append(os.path.join(libdir, 'libtacsim/main.c'))
-Program(prgname, srcfiles)
+exeutil = env.Program(prgname, srcfiles)
 
-if sys.platform.startswith('linux') or \
-    sys.platform.startswith('freebsd'):
-    shutil.copy(os.path.join(libdir, 'libtacsim.so'), '/usr/local/lib/')
-elif sys.platform.startswith('darwin'):
-    shutil.copy(os.path.join(libdir, 'libtacsim.dylib'), '/usr/local/lib/')
-else:
-    print('Unspported system for now: %s' % sys.platform)
-    sys.exit(-1)
-
-shutil.copy(os.path.join(libdir, 'libtacsim.a'), '/usr/local/lib/')
+## install
+env.Alias('install', env.Install('/usr/local/lib/', staticlib))
+env.Alias('install', env.Install('/usr/local/lib/', sharedlib))
 shutil.copy(os.path.join(libdir, 'libtacsim/tacsim.h'), '/usr/local/include/')

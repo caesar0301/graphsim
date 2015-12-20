@@ -4,6 +4,12 @@ include MANIFEST.in
 include setup.py
 include setup.cfg
 
+include libtacsim/libtacsim/main.c
+include libtacsim/libtacsim/tacsim.c
+include libtacsim/libtacsim/tacsim.h
+include libtacsim/SConstruct
+include libtacsim/README.md
+
 global-exclude *~
 global-exclude *.pyc
 global-exclude .git
