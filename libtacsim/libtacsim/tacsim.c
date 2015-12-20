@@ -231,7 +231,7 @@ int copyTo(MatrixDouble **simmat, MatrixDouble **simmat_prev) {
  */
 int graph_elements(MatrixInt *nnadj, VectorDouble *node_weights, MatrixDouble **nn_strength_mat,
                    MatrixInt *eeadj, VectorDouble *edge_weights, MatrixDouble **ee_strength_mat) {
-    
+
     if (nnadj->h != nnadj->w || eeadj->h != eeadj->w) {
         printf("The adjacent matrix should be square.\n");
         exit(-1);
@@ -421,7 +421,7 @@ int calculate_tacsim(int **A, double *Anw, double *Aew, int Anode, int Aedge,
                      int max_iter, double eps, double tol) {
 
     // create a new graph
-    MatrixInt *graph = allocate_matrix_int(Anode, Aedge, -1);
+    MatrixInt *graph = allocate_matrix_int(Anode, Anode, -1);
     MatrixInt *graph_eeadj;
     VectorDouble *node_weights = allocate_vector_double(Anode, -1);
     VectorDouble *edge_weights = allocate_vector_double(Aedge, -1);
@@ -511,7 +511,7 @@ int calculate_tacsim_self(int **A, double *Anw, double *Aew, int Anode, int Aedg
                           int max_iter, double eps, double tol) {
     
     // create a new graph
-    MatrixInt *graph = allocate_matrix_int(Anode, Aedge, -1);
+    MatrixInt *graph = allocate_matrix_int(Anode, Anode, -1);
     MatrixInt *graph_eeadj;
     VectorDouble *node_weights = allocate_vector_double(Anode, -1);
     VectorDouble *edge_weights = allocate_vector_double(Aedge, -1);

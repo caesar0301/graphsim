@@ -29,14 +29,18 @@ def graph_properties(G, node_attribute='weight', edge_attribute='weight'):
     node_weight_vec = np.ones(V, dtype=np.double)
     edge_weight_vec = np.ones(E, dtype=np.double)
 
-    edge_index = 0
-    for i, j in itertools.product(range(V), range(V)):
-        if i == j:
-            node_weight_vec[i] = G.node[nodes[i]][node_attribute]
-        if (nodes[i], nodes[j]) in edges:
-            nnadj[i][j] = edge_index
-            edge_weight_vec[edge_index] = G.edge[nodes[i]][nodes[j]][edge_attribute]
-            edge_index += 1
+    node_id_lookup_tbl = {}
+    for i, n in enumerate(nodes):
+        node_id_lookup_tbl[n] = i
+        node_weight_vec[i] = G.node[n][node_attribute]
+
+    edges = [(node_id_lookup_tbl[e[0]], node_id_lookup_tbl[e[1]], e[2]) for e in G.edges(data=True)]
+    sorted(edges, key=lambda x: (x[0], x[1]))
+
+    for i in range(len(edges)):
+        src, dst, weight = edges[i]
+        nnadj[src][dst] = i
+        edge_weight_vec[i] = weight[edge_attribute]
 
     return nnadj, node_weight_vec, edge_weight_vec, V, E
 
