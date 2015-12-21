@@ -13,21 +13,6 @@
 #include <stdlib.h>
 #include <math.h>
 
-#define USE_FLOATS 1
-#define USE_SHORTS 1
-
-#ifdef USE_SHORTS
-typedef short INT;
-#else
-typedef int INT;
-#endif
-
-#ifdef USE_FLOATS
-typedef float REAL;
-#else
-typedef double REAL;
-#endif
-
 #ifndef TRUE
 #define TRUE 1
 #endif
@@ -42,50 +27,50 @@ typedef struct _MatrixInt {
 } MatrixInt;
 
 
-typedef struct _MatrixReal {
+typedef struct _MatrixDouble {
     int w, h;
-    REAL** m;
-} MatrixReal;
+    double** m;
+} MatrixDouble;
 
-typedef struct _VectorReal {
+typedef struct _VectorDouble {
     int l;
-    REAL* v;
-} VectorReal;
+    double* v;
+} VectorDouble;
 
 MatrixInt* allocate_matrix_int(int h, int w, int fill, int defv);
-MatrixReal* allocate_matrix_real(int h, int w, int fill, REAL defv);
-VectorReal* allocate_vector_real(int l, int fill, REAL defv);
+MatrixDouble* allocate_matrix_double(int h, int w, int fill, double defv);
+VectorDouble* allocate_vector_double(int l, int fill, double defv);
 
 void free_matrix_int(MatrixInt *mat);
-void free_matrix_real(MatrixReal *mat);
-void free_vector_real(VectorReal *vec);
+void free_matrix_double(MatrixDouble *mat);
+void free_vector_double(VectorDouble *vec);
 
-REAL strength_node(REAL nw1, REAL nw2, REAL ew);
-REAL strength_edge(REAL ew1, REAL ew2, REAL nw);
-REAL strength_coherence(REAL s1, REAL s2);
+double strength_node(double nw1, double nw2, double ew);
+double strength_edge(double ew1, double ew2, double nw);
+double strength_coherence(double s1, double s2);
 
-int normalize_vector(REAL **vec, int len);
-int normalize_matrix(REAL ***mat, int m, int n);
+int normalize_vector(double **vec, int len);
+int normalize_matrix(double ***mat, int m, int n);
 
 int get_edge_count(MatrixInt **node_adjacency);
 MatrixInt* get_edge_adjacency(MatrixInt **node_adjacency, int elen);
-int is_converged(MatrixReal **simmat, MatrixReal **simmat_prev, REAL eps);
-int copyTo(MatrixReal **simmat, MatrixReal **simmat_prev);
+int is_converged(MatrixDouble **simmat, MatrixDouble **simmat_prev, double eps);
+int copyTo(MatrixDouble **simmat, MatrixDouble **simmat_prev);
 
-int graph_elements(MatrixInt *nnadj, VectorReal *node_weights, MatrixReal **nn_strength_mat,
-                   MatrixInt *eeadj, VectorReal *edge_weights, MatrixReal **ee_strength_mat);
+int graph_elements(MatrixInt *nnadj, VectorDouble *node_weights, MatrixDouble **nn_strength_mat,
+                   MatrixInt *eeadj, VectorDouble *edge_weights, MatrixDouble **ee_strength_mat);
 
-int tacsim(MatrixInt *g1_nnadj, MatrixInt *g1_eeadj, MatrixReal *g1_nn_strength_mat, MatrixReal *g1_ee_strength_mat,
-           MatrixInt *g2_nnadj, MatrixInt *g2_eeadj, MatrixReal *g2_nn_strength_mat, MatrixReal *g2_ee_strength_mat,
-           MatrixReal **nn_simmat, MatrixReal **ee_simmat, int max_iter, REAL eps, REAL tolerance);
+int tacsim(MatrixInt *g1_nnadj, MatrixInt *g1_eeadj, MatrixDouble *g1_nn_strength_mat, MatrixDouble *g1_ee_strength_mat,
+           MatrixInt *g2_nnadj, MatrixInt *g2_eeadj, MatrixDouble *g2_nn_strength_mat, MatrixDouble *g2_ee_strength_mat,
+           MatrixDouble **nn_simmat, MatrixDouble **ee_simmat, int max_iter, double eps, double tolerance);
 
-int calculate_tacsim(int **A, REAL *Anw, REAL *Aew, int Anode, int Aedge,
-                     int **B, REAL *Bnw, REAL *Bew, int Bnode, int Bedge,
-                     REAL ***nsim, REAL ***esim,
-                     int max_iter, REAL eps, REAL tol);
+int calculate_tacsim(int **A, double *Anw, double *Aew, int Anode, int Aedge,
+                     int **B, double *Bnw, double *Bew, int Bnode, int Bedge,
+                     double ***nsim, double ***esim,
+                     int max_iter, double eps, double tol);
 
-int calculate_tacsim_self(int **A, REAL *Anw, REAL *Aew, int Anode, int Aedge,
-                          REAL ***nsim, REAL ***esim,
-                          int max_iter, REAL eps, REAL tol);
+int calculate_tacsim_self(int **A, double *Anw, double *Aew, int Anode, int Aedge,
+                          double ***nsim, double ***esim,
+                          int max_iter, double eps, double tol);
 
 #endif /* tacsim_h */

@@ -4,8 +4,10 @@ import networkx as nx
 from ctypes import *
 import ctypes.util
 
+from TACSim import node_edge_adjacency, normalized
 
-__all__ = ['tacsim_in_C', 'tacsim_self_in_C']
+
+__all__ = ['tacsim_in_C', 'tacsim_self_in_C', 'tacsim_combined_in_C']
 
 
 ## Find and load tacsim library
@@ -171,6 +173,29 @@ def tacsim_self_in_C(G, node_attribute='weight', edge_attribute='weight',
     return nsim2, esim2
 
 
+def tacsim_combined_in_C(G1, G2=None, node_attribute='weight', edge_attribute='weight', lamb = 0.5, norm=True):
+    """ Combined similarity based on original tacsim scores. Refer to paper Mesos.
+    """
+    # X: node similarity; Y: edge similarity
+    if G2 is None:
+        X, Y = tacsim_self_in_C(G1, node_attribute, edge_attribute)
+    else:
+        X, Y = tacsim_in_C(G1, G2, node_attribute, edge_attribute)
+
+    As, At = node_edge_adjacency(G1)
+    if G2 is None:
+        Bs, Bt = As, At
+    else:
+        Bs, Bt = node_edge_adjacency(G2)
+
+    Z = Y + lamb * np.dot(np.dot(As.T, X), Bs) + (1-lamb) * np.dot(np.dot(At.T, X), Bt)
+
+    if norm:
+        return normalized(Z)
+    else:
+        return Z
+
+
 if __name__ == '__main__':
     G1 = nx.DiGraph()
     G1.add_weighted_edges_from([(1,0,8), (0,2,12), (1,2,10), (2,3,15)])
@@ -188,4 +213,6 @@ if __name__ == '__main__':
     print tacsim_in_C(G1, G2)
 
     print tacsim_self_in_C(G1)
+
+    print tacsim_combined_in_C(G1, G2)
 

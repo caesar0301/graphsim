@@ -26,15 +26,15 @@ int test_similarity() {
     int Bedge = 2;
     
     MatrixInt *graph = allocate_matrix_int(Anode, Aedge, TRUE, -1);
-    VectorReal *node_weights = allocate_vector_real(Anode, TRUE, -1);
-    VectorReal *edge_weights = allocate_vector_real(Aedge, TRUE, -1);
+    VectorDouble *node_weights = allocate_vector_double(Anode, TRUE, -1);
+    VectorDouble *edge_weights = allocate_vector_double(Aedge, TRUE, -1);
     
     MatrixInt *graph2 = allocate_matrix_int(Bnode, Bnode, TRUE, -1);
-    VectorReal *node_weights2 = allocate_vector_real(Bnode, TRUE, -1);
-    VectorReal *edge_weights2 = allocate_vector_real(Bedge, TRUE, -1);
+    VectorDouble *node_weights2 = allocate_vector_double(Bnode, TRUE, -1);
+    VectorDouble *edge_weights2 = allocate_vector_double(Bedge, TRUE, -1);
     
-    REAL **nsim;
-    REAL **esim;
+    double **nsim;
+    double **esim;
     
     for (int i = 0; i<graph->h; i++) {
         for(int j = 0; j<graph->w; j++) {
@@ -94,10 +94,10 @@ int test_self_similarity() {
     int Aedge = 4;
     
     MatrixInt *graph = allocate_matrix_int(Anode, Aedge, TRUE, -1);
-    VectorReal *node_weights = allocate_vector_real(Anode, TRUE, -1);
-    VectorReal *edge_weights = allocate_vector_real(Aedge, TRUE, -1);
-    REAL **nsim;
-    REAL **esim;
+    VectorDouble *node_weights = allocate_vector_double(Anode, TRUE, -1);
+    VectorDouble *edge_weights = allocate_vector_double(Aedge, TRUE, -1);
+    double **nsim;
+    double **esim;
     
     for (int i = 0; i<graph->h; i++) {
         for(int j = 0; j<graph->w; j++) {
