@@ -10,13 +10,13 @@ prgname = 'test_tacsim'
 libname = 'libtacsim'
 srcfiles = [os.path.join(libdir, 'libtacsim/tacsim.c')]
 
-env = Environment()
+env = Environment(CCFLAGS = ['-std=c99', '-Wall', '-O2', '-g'])
 
 staticlib = env.Library(libname, srcfiles)
 sharedlib = env.SharedLibrary(libname, srcfiles)
 
 srcfiles.append(os.path.join(libdir, 'libtacsim/main.c'))
-exeutil = env.Program(prgname, srcfiles)
+exeutil = env.Program(prgname, srcfiles, LIBS=['m'])
 
 ## install
 env.Alias('install', env.Install('/usr/local/lib/', staticlib))

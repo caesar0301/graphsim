@@ -1,10 +1,8 @@
 import sys
 import numpy as np
-from numpy.ctypeslib import ndpointer
 import networkx as nx
 from ctypes import *
 import ctypes.util
-import itertools
 
 
 __all__ = ['tacsim_in_C', 'tacsim_self_in_C']
@@ -13,10 +11,14 @@ __all__ = ['tacsim_in_C', 'tacsim_self_in_C']
 ## Find and load tacsim library
 tacsimlib = ctypes.util.find_library('tacsim')
 if not tacsimlib:
-    raise "Can't find libtacsim. Please install it first."
-    sys.exit(-1)
-
-libc = CDLL(tacsimlib, mode=ctypes.RTLD_GLOBAL)
+    try:
+        libc = ctypes.cdll.LoadLibrary('/usr/local/lib/libtacsim.so')
+        libc.tacsim
+    except:
+        raise "Can't find libtacsim. Please install it first."
+        sys.exit(-1)
+else:
+    libc = CDLL(tacsimlib, mode=ctypes.RTLD_GLOBAL)
 
 
 def graph_properties(G, node_attribute='weight', edge_attribute='weight',
@@ -106,7 +108,7 @@ def tacsim_in_C(G1, G2, node_attribute='weight', edge_attribute='weight',
     calculate_tacsim.restype = c_int
 
     nnadj, nwgt, ewgt, nlen, elen = graph_properties(G1,
-        ode_attribute, edge_attribute, min_node_weight, min_edge_weight)
+        node_attribute, edge_attribute, min_node_weight, min_edge_weight)
     nnadj2, nwgt2, ewgt2, nlen2, elen2 = graph_properties(G2,
         node_attribute, edge_attribute, min_node_weight, min_edge_weight)
 
