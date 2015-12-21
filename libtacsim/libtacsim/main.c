@@ -17,8 +17,8 @@ int main(int argc, const char * argv[]) {
     int Bedge = 2;
     
     MatrixInt *graph = allocate_matrix_int(Anode, Aedge, -1);
-    VectorDouble *node_weights = allocate_vector_double(Anode, -1);
-    VectorDouble *edge_weights = allocate_vector_double(Aedge, -1);
+    VectorReal *node_weights = allocate_vector_real(Anode, -1);
+    VectorReal *edge_weights = allocate_vector_real(Aedge, -1);
     
     for (int i = 0; i<graph->h; i++) {
         for(int j = 0; j<graph->w; j++) {
@@ -33,8 +33,8 @@ int main(int argc, const char * argv[]) {
         edge_weights->v[i] = Aew[i];
     
     MatrixInt *graph2 = allocate_matrix_int(Bnode, Bnode, -1);
-    VectorDouble *node_weights2 = allocate_vector_double(Bnode, -1);
-    VectorDouble *edge_weights2 = allocate_vector_double(Bedge, -1);
+    VectorReal *node_weights2 = allocate_vector_real(Bnode, -1);
+    VectorReal *edge_weights2 = allocate_vector_real(Bedge, -1);
     
     for (int i = 0; i<graph2->h; i++) {
         for(int j = 0; j<graph2->w; j++) {
@@ -48,8 +48,8 @@ int main(int argc, const char * argv[]) {
     for (int i = 0; i < edge_weights2->l; i++)
         edge_weights2->v[i] = Bew[i];
     
-    double **nsim;
-    double **esim;
+    REAL **nsim;
+    REAL **esim;
     
     // Similarity of two graphs
     calculate_tacsim(graph->m, node_weights->v, edge_weights->v, Anode, Aedge,
