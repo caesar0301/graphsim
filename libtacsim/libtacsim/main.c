@@ -1,9 +1,18 @@
 
 #include "tacsim.h"
 
+int test_similarity();
+int test_self_similarity();
 
 int main(int argc, const char * argv[]) {
     
+    test_similarity();
+    test_self_similarity();
+    
+    return 0;
+}
+
+int test_similarity() {
     int A[4][4] = {{-1,-1,0,-1}, {1,-1,2,-1}, {-1,-1,-1,3}, {-1,-1,-1,-1}};
     int Anw[4] = {1,1,5,1};
     int Aew[4] = {12,8,10,15};
@@ -16,9 +25,16 @@ int main(int argc, const char * argv[]) {
     int Bnode = 3;
     int Bedge = 2;
     
-    MatrixInt *graph = allocate_matrix_int(Anode, Aedge, -1);
-    VectorReal *node_weights = allocate_vector_real(Anode, -1);
-    VectorReal *edge_weights = allocate_vector_real(Aedge, -1);
+    MatrixInt *graph = allocate_matrix_int(Anode, Aedge, TRUE, -1);
+    VectorReal *node_weights = allocate_vector_real(Anode, TRUE, -1);
+    VectorReal *edge_weights = allocate_vector_real(Aedge, TRUE, -1);
+    
+    MatrixInt *graph2 = allocate_matrix_int(Bnode, Bnode, TRUE, -1);
+    VectorReal *node_weights2 = allocate_vector_real(Bnode, TRUE, -1);
+    VectorReal *edge_weights2 = allocate_vector_real(Bedge, TRUE, -1);
+    
+    REAL **nsim;
+    REAL **esim;
     
     for (int i = 0; i<graph->h; i++) {
         for(int j = 0; j<graph->w; j++) {
@@ -32,9 +48,6 @@ int main(int argc, const char * argv[]) {
     for (int i = 0; i < edge_weights->l; i++)
         edge_weights->v[i] = Aew[i];
     
-    MatrixInt *graph2 = allocate_matrix_int(Bnode, Bnode, -1);
-    VectorReal *node_weights2 = allocate_vector_real(Bnode, -1);
-    VectorReal *edge_weights2 = allocate_vector_real(Bedge, -1);
     
     for (int i = 0; i<graph2->h; i++) {
         for(int j = 0; j<graph2->w; j++) {
@@ -47,9 +60,6 @@ int main(int argc, const char * argv[]) {
     
     for (int i = 0; i < edge_weights2->l; i++)
         edge_weights2->v[i] = Bew[i];
-    
-    REAL **nsim;
-    REAL **esim;
     
     // Similarity of two graphs
     calculate_tacsim(graph->m, node_weights->v, edge_weights->v, Anode, Aedge,
@@ -72,6 +82,36 @@ int main(int argc, const char * argv[]) {
     }
     printf("\n");
     
+    return 0;
+}
+
+int test_self_similarity() {
+    
+    int A[4][4] = {{-1,-1,0,-1}, {1,-1,2,-1}, {-1,-1,-1,3}, {-1,-1,-1,-1}};
+    int Anw[4] = {1,1,5,1};
+    int Aew[4] = {12,8,10,15};
+    int Anode = 4;
+    int Aedge = 4;
+    
+    MatrixInt *graph = allocate_matrix_int(Anode, Aedge, TRUE, -1);
+    VectorReal *node_weights = allocate_vector_real(Anode, TRUE, -1);
+    VectorReal *edge_weights = allocate_vector_real(Aedge, TRUE, -1);
+    REAL **nsim;
+    REAL **esim;
+    
+    for (int i = 0; i<graph->h; i++) {
+        for(int j = 0; j<graph->w; j++) {
+            graph->m[i][j] = A[i][j];
+        }
+    }
+    
+    for (int i = 0; i < node_weights->l; i++)
+        node_weights->v[i] = Anw[i];
+    
+    for (int i = 0; i < edge_weights->l; i++)
+        edge_weights->v[i] = Aew[i];
+    
+
     // Self-similarity of a graph
     calculate_tacsim_self(graph->m, node_weights->v, edge_weights->v, Anode, Aedge,
                           &nsim, &esim, 100, 1e-4, 1e-6);

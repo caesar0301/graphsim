@@ -22,11 +22,18 @@ typedef short INT;
 typedef int INT;
 #endif
 
-
 #ifdef USE_FLOATS
 typedef float REAL;
 #else
 typedef double REAL;
+#endif
+
+#ifndef TRUE
+#define TRUE 1
+#endif
+
+#ifndef FALSE
+#define FALSE 0
 #endif
 
 typedef struct _MatrixInt {
@@ -45,9 +52,9 @@ typedef struct _VectorReal {
     REAL* v;
 } VectorReal;
 
-MatrixInt* allocate_matrix_int(int h, int w, int defv);
-MatrixReal* allocate_matrix_real(int h, int w, REAL defv);
-VectorReal* allocate_vector_real(int l, REAL defv);
+MatrixInt* allocate_matrix_int(int h, int w, int fill, int defv);
+MatrixReal* allocate_matrix_real(int h, int w, int fill, REAL defv);
+VectorReal* allocate_vector_real(int l, int fill, REAL defv);
 
 void free_matrix_int(MatrixInt *mat);
 void free_matrix_real(MatrixReal *mat);

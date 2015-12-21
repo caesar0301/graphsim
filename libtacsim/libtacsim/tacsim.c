@@ -10,55 +10,67 @@
 /**
  * Allocate a 2D int array with h rows and w columns
  */
-MatrixInt* allocate_matrix_int(int h, int w, int defv){
+MatrixInt* allocate_matrix_int(int h, int w, int fill, int defv){
     MatrixInt *mat = malloc(sizeof(MatrixInt));
     mat->h = h;
     mat->w = w;
+    mat->m = NULL;
     
-    int **arr;
-    arr = (int**) malloc(h * sizeof(int*));
-    for (int i = 0; i < h; i++) {
-        arr[i] = (int*) malloc(w * sizeof(int));
-        for (int j = 0; j < w; j++) {
-            arr[i][j] = defv;
+    if (fill == TRUE) {
+        int **arr;
+        arr = (int**) malloc(h * sizeof(int*));
+        for (int i = 0; i < h; i++) {
+            arr[i] = (int*) malloc(w * sizeof(int));
+            for (int j = 0; j < w; j++) {
+                arr[i][j] = defv;
+            }
         }
+        
+        mat->m = arr;
     }
     
-    mat->m = arr;
     return mat;
 }
 
 /**
  * Allocate a 2D REAL array with h rows and w columns
  */
-MatrixReal* allocate_matrix_real(int h, int w, REAL defv){
+MatrixReal* allocate_matrix_real(int h, int w, int fill, REAL defv){
     MatrixReal *mat = malloc(sizeof(MatrixReal));
     mat->h = h;
     mat->w = w;
+    mat->m = NULL;
     
-    REAL **arr;
-    arr = (REAL**) malloc(h * sizeof(REAL*));
-    for (int i = 0; i < h; i++) {
-        arr[i] = (REAL*) malloc(w * sizeof(REAL));
-        for (int j = 0; j < w; j++) {
-            arr[i][j] = defv;
+    if (fill == TRUE) {
+        REAL **arr;
+        arr = (REAL**) malloc(h * sizeof(REAL*));
+        for (int i = 0; i < h; i++) {
+            arr[i] = (REAL*) malloc(w * sizeof(REAL));
+            for (int j = 0; j < w; j++) {
+                arr[i][j] = defv;
+            }
         }
+        mat->m = arr;
     }
     
-    mat->m = arr;
     return mat;
 }
 
 /**
  * Allocate a 1D REAL array with l elements.
  */
-VectorReal* allocate_vector_real(int l, REAL defv){
+VectorReal* allocate_vector_real(int l, int fill, REAL defv){
     VectorReal *vec = malloc(sizeof(VectorReal));
     vec->l = l;
-    vec->v = malloc(vec->l * sizeof(REAL));
-    for (int i=0; i < vec->l; i++) {
-        vec->v[i] = defv;
+    vec->v = NULL;
+    
+    if (fill == TRUE) {
+        vec->v = malloc(vec->l * sizeof(REAL));
+        for (int i=0; i < vec->l; i++) {
+            vec->v[i] = defv;
+        }
     }
+    
     return vec;
 }
 
@@ -66,11 +78,16 @@ VectorReal* allocate_vector_real(int l, REAL defv){
  * Free struct MatrixInt
  */
 void free_matrix_int(MatrixInt *mat) {
-    int **arr = mat->m;
     for (int i = 0; i < mat->h; i++) {
-        free(arr[i]);
+        if (mat->m[i] != NULL) {
+            free(mat->m[i]);
+            mat->m[i] = NULL;
+        }
     }
-    free(arr);
+    if (mat->m != NULL){
+        free(mat->m);
+        mat->m = NULL;
+    }
     free(mat);
 }
 
@@ -78,13 +95,16 @@ void free_matrix_int(MatrixInt *mat) {
  * Free struct MatrixReal
  */
 void free_matrix_real(MatrixReal *mat) {
-    REAL **arr = mat->m;
     for (int i = 0; i < mat->h; i++) {
-        free(arr[i]);
-        arr[i] = 0;
+        if (mat->m[i] != NULL) {
+            free(mat->m[i]);
+            mat->m[i] = NULL;
+        }
     }
-    free(arr);
-    arr = 0;
+    if (mat->m != NULL){
+        free(mat->m);
+        mat->m = NULL;
+    }
     free(mat);
 }
 
@@ -92,7 +112,10 @@ void free_matrix_real(MatrixReal *mat) {
  * Free struct VectorReal
  */
 void free_vector_real(VectorReal *vec) {
-    free(vec->v);
+    if (vec->v != NULL) {
+        free(vec->v);
+        vec->v = NULL;
+    }
     free(vec);
 }
 
@@ -175,16 +198,17 @@ int get_edge_count(MatrixInt **node_adjacency){
  */
 MatrixInt* get_edge_adjacency(MatrixInt **node_adjacency, int elen){
     MatrixInt *nnadj = *node_adjacency;
-    MatrixInt *eeadj = allocate_matrix_int(elen, elen, -1);
+    MatrixInt *eeadj = allocate_matrix_int(elen, elen, TRUE, -1);
     
+    // Assert h == w
     for (int i=0; i < nnadj->h; i++) {
-        for (int j = 0; j < nnadj->h; j++) {
-            if (nnadj->m[j][i] >= 0) {
-                for (int k = 0; k < nnadj->h; k++) {
-                    if (nnadj->m[i][k] >= 0) {
-                        int src = nnadj->m[j][i];
-                        int dst = nnadj->m[i][k];
-                        eeadj->m[src][dst] = i;
+        for (int j = 0; j < nnadj->w; j++) {
+            if (nnadj->m[i][j] >= 0) {
+                for (int k = 0; k < nnadj->w; k++) {
+                    if (nnadj->m[j][k] >= 0) {
+                        int src = nnadj->m[i][j];
+                        int dst = nnadj->m[j][k];
+                        eeadj->m[src][dst] = j;
                     }
                 }
             }
@@ -231,8 +255,6 @@ int copyTo(MatrixReal **simmat, MatrixReal **simmat_prev) {
  */
 int graph_elements(MatrixInt *nnadj, VectorReal *node_weights, MatrixReal **nn_strength_mat,
                    MatrixInt *eeadj, VectorReal *edge_weights, MatrixReal **ee_strength_mat) {
-    
-    printf("Entering graph_elements\n");
 
     if (nnadj->h != nnadj->w || eeadj->h != eeadj->w) {
         printf("The adjacent matrix should be square.\n");
@@ -270,8 +292,6 @@ int graph_elements(MatrixInt *nnadj, VectorReal *node_weights, MatrixReal **nn_s
         }
     }
     
-    printf("Exiting graph_elements\n");
-    
     return 0;
 }
 
@@ -296,17 +316,13 @@ int tacsim(MatrixInt *g1_nnadj, MatrixInt *g1_eeadj, MatrixReal *g1_nn_strength_
            MatrixInt *g2_nnadj, MatrixInt *g2_eeadj, MatrixReal *g2_nn_strength_mat, MatrixReal *g2_ee_strength_mat,
            MatrixReal **nn_simmat, MatrixReal **ee_simmat, int max_iter, REAL eps, REAL tolerance) {
     
-    printf("Entering tacsim\n");
-    
     MatrixReal *nn_sim = *nn_simmat;
     MatrixReal *ee_sim = *ee_simmat;
-    MatrixReal *nn_sim_prev = allocate_matrix_real(nn_sim->h, nn_sim->w, 0);
-    MatrixReal *ee_sim_prev = allocate_matrix_real(ee_sim->h, ee_sim->w, 0);
+    MatrixReal *nn_sim_prev = allocate_matrix_real(nn_sim->h, nn_sim->w, TRUE, 0);
+    MatrixReal *ee_sim_prev = allocate_matrix_real(ee_sim->h, ee_sim->w, TRUE, 0);
     
     int iter = 0;
     for (; iter < max_iter; iter++) {
-        
-        printf("Iteration %d\n", iter);
         
         if (is_converged(&nn_sim, &nn_sim_prev, eps) == 0 &&
             is_converged(&ee_sim, &ee_sim_prev, eps) == 0)
@@ -321,13 +337,15 @@ int tacsim(MatrixInt *g1_nnadj, MatrixInt *g1_eeadj, MatrixReal *g1_nn_strength_
         
         for (int i = 0; i < N; i++){
             for (int j = 0; j < M; j++) {
+                //TODO: optimize the neighbor-pair finding
+                
                 // In neighbors
                 for (int u = 0; u < N; u++){
                     REAL sui = g1_nn_strength_mat->m[u][i];
-                    if (sui >= 0) {
+                    if (sui > 0) {
                         for (int v = 0; v < M; v++){
                             REAL svj = g2_nn_strength_mat->m[v][j];
-                            if (svj >= 0) {
+                            if (svj > 0) {
                                 int u_edge = g1_nnadj->m[u][i];
                                 int v_edge = g2_nnadj->m[v][j];
                                 
@@ -342,10 +360,10 @@ int tacsim(MatrixInt *g1_nnadj, MatrixInt *g1_eeadj, MatrixReal *g1_nn_strength_
                 // Out neighbors
                 for (int u = 0; u < N; u++){
                     REAL siu = g1_nn_strength_mat->m[i][u];
-                    if (siu >= 0) {
+                    if (siu > 0) {
                         for (int v = 0; v < M; v++){
                             REAL sjv = g2_nn_strength_mat->m[j][v];
-                            if (sjv >= 0) {
+                            if (sjv > 0) {
                                 int u_edge = g1_nnadj->m[i][u];
                                 int v_edge = g2_nnadj->m[j][v];
                                 
@@ -368,10 +386,10 @@ int tacsim(MatrixInt *g1_nnadj, MatrixInt *g1_eeadj, MatrixReal *g1_nn_strength_
                 // In neighbors
                 for (int u = 0; u < P; u++){
                     REAL sui = g1_ee_strength_mat->m[u][i];
-                    if (sui >= 0) {
+                    if (sui > 0) {
                         for (int v = 0; v < Q; v++){
                             REAL svj = g2_ee_strength_mat->m[v][j];
-                            if (svj >= 0) {
+                            if (svj > 0) {
                                 int u_node = g1_eeadj->m[u][i];
                                 int v_node = g2_eeadj->m[v][j];
                                 
@@ -386,10 +404,10 @@ int tacsim(MatrixInt *g1_nnadj, MatrixInt *g1_eeadj, MatrixReal *g1_nn_strength_
                 // Out neighbors
                 for (int u = 0; u < P; u++){
                     REAL siu = g1_ee_strength_mat->m[i][u];
-                    if (siu >= 0) {
+                    if (siu > 0) {
                         for (int v = 0; v < Q; v++){
                             REAL sjv = g2_ee_strength_mat->m[j][v];
-                            if (sjv >= 0) {
+                            if (sjv > 0) {
                                 int u_node = g1_eeadj->m[i][u];
                                 int v_node = g2_eeadj->m[j][v];
                                 
@@ -429,78 +447,59 @@ int calculate_tacsim(int **A, REAL *Anw, REAL *Aew, int Anode, int Aedge,
                      int max_iter, REAL eps, REAL tol) {
 
     // create a new graph
-    MatrixInt *graph = allocate_matrix_int(Anode, Anode, -1);
+    MatrixInt *graph = allocate_matrix_int(Anode, Anode, FALSE, -1);
     MatrixInt *graph_eeadj;
-    VectorReal *node_weights = allocate_vector_real(Anode, -1);
-    VectorReal *edge_weights = allocate_vector_real(Aedge, -1);
-    MatrixReal *nn_strength_mat = allocate_matrix_real(Anode, Anode, -1);
-    MatrixReal *ee_strength_mat = allocate_matrix_real(Aedge, Aedge, -1);
+    VectorReal *node_weights = allocate_vector_real(Anode, FALSE, -1);
+    VectorReal *edge_weights = allocate_vector_real(Aedge, FALSE, -1);
+    MatrixReal *nn_strength_mat = allocate_matrix_real(Anode, Anode, TRUE, -1);
+    MatrixReal *ee_strength_mat = allocate_matrix_real(Aedge, Aedge, TRUE, -1);
     
-    for (int i = 0; i<graph->h; i++) {
-        for(int j = 0; j<graph->w; j++) {
-            graph->m[i][j] = A[i][j];
-        }
-    }
+    // create another graph
+    MatrixInt *graph2 = allocate_matrix_int(Bnode, Bnode, FALSE, -1);
+    MatrixInt *graph_eeadj2;
+    VectorReal *node_weights2 = allocate_vector_real(Bnode, FALSE, -1);
+    VectorReal *edge_weights2 = allocate_vector_real(Bedge, FALSE, -1);
+    MatrixReal *nn_strength_mat2 = allocate_matrix_real(Bnode, Bnode, TRUE, -1);
+    MatrixReal *ee_strength_mat2 = allocate_matrix_real(Bedge, Bedge, TRUE, -1);
     
-    for (int i = 0; i < node_weights->l; i++)
-        node_weights->v[i] = Anw[i];
+    MatrixReal *nn_sim = allocate_matrix_real(Anode, Bnode, TRUE, 1);
+    MatrixReal *ee_sim = allocate_matrix_real(Aedge, Bedge, TRUE, 1);
     
-    for (int i = 0; i < edge_weights->l; i++)
-        edge_weights->v[i] = Aew[i];
+    graph->m = A;
+    node_weights->v = Anw;
+    edge_weights->v = Aew;
+    
+    graph2->m = B;
+    node_weights2->v = Bnw;
+    edge_weights2->v = Bew;
     
     normalize_vector(&(node_weights->v), node_weights->l);
     normalize_vector(&(edge_weights->v), edge_weights->l);
     
-    graph_eeadj = get_edge_adjacency(&graph, Aedge);
-    
-    graph_elements(graph, node_weights, &nn_strength_mat, graph_eeadj, edge_weights, &ee_strength_mat);
-    
-    free_vector_real(node_weights);
-    free_vector_real(edge_weights);
-    
-    // create another graph
-    MatrixInt *graph2 = allocate_matrix_int(Bnode, Bnode, -1);
-    MatrixInt *graph_eeadj2;
-    VectorReal *node_weights2 = allocate_vector_real(Bnode, -1);
-    VectorReal *edge_weights2 = allocate_vector_real(Bedge, -1);
-    MatrixReal *nn_strength_mat2 = allocate_matrix_real(Bnode, Bnode, -1);
-    MatrixReal *ee_strength_mat2 = allocate_matrix_real(Bedge, Bedge, -1);
-    
-    for (int i = 0; i<graph2->h; i++) {
-        for(int j = 0; j<graph2->w; j++) {
-            graph2->m[i][j] = B[i][j];
-        }
-    }
-    
-    for (int i = 0; i < node_weights2->l; i++)
-        node_weights2->v[i] = Bnw[i];
-    
-    for (int i = 0; i < edge_weights2->l; i++)
-        edge_weights2->v[i] = Bew[i];
-    
     normalize_vector(&(node_weights2->v), node_weights2->l);
     normalize_vector(&(edge_weights2->v), edge_weights2->l);
-
+    
+    graph_eeadj = get_edge_adjacency(&graph, Aedge);
     graph_eeadj2 = get_edge_adjacency(&graph2, Bedge);
-
+    
+    graph_elements(graph, node_weights, &nn_strength_mat, graph_eeadj, edge_weights, &ee_strength_mat);
     graph_elements(graph2, node_weights2, &nn_strength_mat2, graph_eeadj2, edge_weights2, &ee_strength_mat2);
-    
-    free_vector_real(node_weights2);
-    free_vector_real(edge_weights2);
-    
-    MatrixReal *nn_sim = allocate_matrix_real(Anode, Bnode, 1);
-    MatrixReal *ee_sim = allocate_matrix_real(Aedge, Bedge, 1);
     
     tacsim(graph, graph_eeadj, nn_strength_mat, ee_strength_mat,
            graph2, graph_eeadj2, nn_strength_mat2, ee_strength_mat2,
            &nn_sim, &ee_sim, max_iter, eps, tol);
     
-    free_matrix_int(graph);
+    // We should not free the accepted memory
+//    free_vector_real(node_weights);
+//    free_vector_real(edge_weights);
+//    free_vector_real(node_weights2);
+//    free_vector_real(edge_weights2);
+//    free_matrix_int(graph);
+//    free_matrix_int(graph2);
+
     free_matrix_int(graph_eeadj);
     free_matrix_real(nn_strength_mat);
     free_matrix_real(ee_strength_mat);
-    
-    free_matrix_int(graph2);
     free_matrix_int(graph_eeadj2);
     free_matrix_real(nn_strength_mat2);
     free_matrix_real(ee_strength_mat2);
@@ -519,43 +518,35 @@ int calculate_tacsim_self(int **A, REAL *Anw, REAL *Aew, int Anode, int Aedge,
                           int max_iter, REAL eps, REAL tol) {
     
     // create a new graph
-    MatrixInt *graph = allocate_matrix_int(Anode, Anode, -1);
+    MatrixInt *graph = allocate_matrix_int(Anode, Anode, FALSE, -1);
     MatrixInt *graph_eeadj;
-    VectorReal *node_weights = allocate_vector_real(Anode, -1);
-    VectorReal *edge_weights = allocate_vector_real(Aedge, -1);
-    MatrixReal *nn_strength_mat = allocate_matrix_real(Anode, Anode, -1);
-    MatrixReal *ee_strength_mat = allocate_matrix_real(Aedge, Aedge, -1);
+    VectorReal *node_weights = allocate_vector_real(Anode, FALSE, -1);
+    VectorReal *edge_weights = allocate_vector_real(Aedge, FALSE, -1);
+    MatrixReal *nn_strength_mat = allocate_matrix_real(Anode, Anode, TRUE, -1);
+    MatrixReal *ee_strength_mat = allocate_matrix_real(Aedge, Aedge, TRUE, -1);
     
-    for (int i = 0; i<graph->h; i++) {
-        for(int j = 0; j<graph->w; j++) {
-            graph->m[i][j] = A[i][j];
-        }
-    }
-    
-    for (int i = 0; i < node_weights->l; i++)
-        node_weights->v[i] = Anw[i];
-    
-    for (int i = 0; i < edge_weights->l; i++)
-        edge_weights->v[i] = Aew[i];
+    graph->m = A;
+    node_weights->v = Anw;
+    edge_weights->v = Aew;
     
     normalize_vector(&(node_weights->v), node_weights->l);
     normalize_vector(&(edge_weights->v), edge_weights->l);
     
     graph_eeadj = get_edge_adjacency(&graph, Aedge);
-    
     graph_elements(graph, node_weights, &nn_strength_mat, graph_eeadj, edge_weights, &ee_strength_mat);
     
-    free_vector_real(node_weights);
-    free_vector_real(edge_weights);
-    
-    MatrixReal *nn_sim = allocate_matrix_real(Anode, Anode, 1);
-    MatrixReal *ee_sim = allocate_matrix_real(Aedge, Aedge, 1);
+    MatrixReal *nn_sim = allocate_matrix_real(Anode, Anode, TRUE, 1);
+    MatrixReal *ee_sim = allocate_matrix_real(Aedge, Aedge, TRUE, 1);
     
     tacsim(graph, graph_eeadj, nn_strength_mat, ee_strength_mat,
            graph, graph_eeadj, nn_strength_mat, ee_strength_mat,
            &nn_sim, &ee_sim, max_iter, eps, tol);
     
-    free_matrix_int(graph);
+    // We should not free the accepted memory
+//    free_vector_real(node_weights);
+//    free_vector_real(edge_weights);
+//    free_matrix_int(graph);
+    
     free_matrix_int(graph_eeadj);
     free_matrix_real(nn_strength_mat);
     free_matrix_real(ee_strength_mat);
