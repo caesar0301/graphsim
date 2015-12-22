@@ -22,6 +22,9 @@ Then install graphsim via PyPI:
     $ pip install -U graphsim
 
 
+**NOTE**: `libtacsim` was tested on Ubuntu 12.04, CentOS 6.5 and Mac OS 10.11.2.
+
+
 Usage
 -----
 
