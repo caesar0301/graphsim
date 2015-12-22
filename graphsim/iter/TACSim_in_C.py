@@ -7,20 +7,22 @@ import ctypes.util
 from TACSim import node_edge_adjacency, normalized
 
 
-__all__ = ['tacsim_in_C', 'tacsim_self_in_C', 'tacsim_combined_in_C']
+__all__ = ['tacsim_in_C', 'tacsim_combined_in_C']
 
 
-## Find and load tacsim library
-tacsimlib = ctypes.util.find_library('tacsim')
-if not tacsimlib:
-    try:
-        libc = ctypes.cdll.LoadLibrary('/usr/local/lib/libtacsim.so')
-        libc.tacsim
-    except:
-        raise "Can't find libtacsim. Please install it first."
-        sys.exit(-1)
-else:
-    libc = CDLL(tacsimlib, mode=ctypes.RTLD_GLOBAL)
+def find_clib():
+    ## Find and load tacsim library
+    tacsimlib = ctypes.util.find_library('tacsim')
+    if not tacsimlib:
+        try:
+            libc = ctypes.cdll.LoadLibrary('/usr/local/lib/libtacsim.so')
+            libc.tacsim
+        except:
+            raise "Can't find libtacsim. Please install it first."
+            sys.exit(-1)
+    else:
+        libc = CDLL(tacsimlib, mode=ctypes.RTLD_GLOBAL)
+    return libc
 
 
 def graph_properties(G, node_attribute='weight', edge_attribute='weight',
@@ -91,84 +93,80 @@ def cpointer_to_ndarray(ptr, size, dtype, shape):
     return arr
 
 
-def tacsim_in_C(G1, G2, node_attribute='weight', edge_attribute='weight',
+def tacsim_in_C(G1, G2=None, node_attribute='weight', edge_attribute='weight',
     min_node_weight=1e-4, min_edge_weight=1e-4,
     max_iter=100, eps=1e-4, tol=1e-6):
-    ## Calculate similarity of two attributed graphs
-    calculate_tacsim = libc.calculate_tacsim
-    calculate_tacsim.argtypes = [
-        POINTER(POINTER(c_int)),
-        POINTER(c_double),
-        POINTER(c_double), c_int, c_int,
-        POINTER(POINTER(c_int)),
-        POINTER(c_double),
-        POINTER(c_double), c_int, c_int,
-        POINTER(POINTER(POINTER(c_double))),
-        POINTER(POINTER(POINTER(c_double))),
-        c_int, c_double, c_double
-    ]
-    calculate_tacsim.restype = c_int
 
-    nnadj, nwgt, ewgt, nlen, elen = graph_properties(G1,
-        node_attribute, edge_attribute, min_node_weight, min_edge_weight)
-    nnadj2, nwgt2, ewgt2, nlen2, elen2 = graph_properties(G2,
-        node_attribute, edge_attribute, min_node_weight, min_edge_weight)
+    libc = find_clib()
 
     nsim = POINTER(POINTER(c_double))()
     esim = POINTER(POINTER(c_double))()
 
-    calculate_tacsim(
-        matrix_to_cpointer(nnadj, (nlen, nlen), dtype=c_int),
-        vector_to_cpointer(nwgt, nlen, dtype=c_double),
-        vector_to_cpointer(ewgt, elen, dtype=c_double),
-        c_int(nlen), c_int(elen),
-        matrix_to_cpointer(nnadj2, (nlen2, nlen2), dtype=c_int),
-        vector_to_cpointer(nwgt2, nlen2, dtype=c_double),
-        vector_to_cpointer(ewgt2, elen2, dtype=c_double),
-        c_int(nlen2), c_int(elen2),
-        byref(nsim), byref(esim),
-        c_int(max_iter), c_double(eps), c_double(tol)
-    )
+    if G2 is None:
+        ## Calculate self-similarity of an attributed graph
+        calculate_tacsim_self = libc.calculate_tacsim_self
+        calculate_tacsim_self.argtypes = [
+            POINTER(POINTER(c_int)),
+            POINTER(c_double),
+            POINTER(c_double), c_int, c_int,
+            POINTER(POINTER(POINTER(c_double))),
+            POINTER(POINTER(POINTER(c_double))),
+            c_int, c_double, c_double
+        ]
+        calculate_tacsim_self.restype = c_int
 
-    nsim2 = cpointer_to_matrix(nsim, (nlen, nlen2))
-    esim2 = cpointer_to_matrix(esim, (elen, elen2))
+        # Convert graph attributes to ctypes
+        nnadj, nwgt, ewgt, nlen, elen = graph_properties(G1,
+            node_attribute, edge_attribute, min_node_weight, min_edge_weight)
 
-    return nsim2, esim2
+        calculate_tacsim_self(
+            matrix_to_cpointer(nnadj, (nlen, nlen), dtype=c_int),
+            vector_to_cpointer(nwgt, nlen, dtype=c_double),
+            vector_to_cpointer(ewgt, elen, dtype=c_double),
+            c_int(nlen), c_int(elen),
+            byref(nsim), byref(esim),
+            c_int(max_iter), c_double(eps), c_double(tol)
+        )
 
+        nsim2 = cpointer_to_matrix(nsim, (nlen, nlen))
+        esim2 = cpointer_to_matrix(esim, (elen, elen))
 
-def tacsim_self_in_C(G, node_attribute='weight', edge_attribute='weight',
-    min_node_weight=1e-4, min_edge_weight=1e-4,
-    max_iter=100, eps=1e-4, tol=1e-6):
-    ## Calculate self-similarity of an attributed graph
-    calculate_tacsim_self = libc.calculate_tacsim_self
-    calculate_tacsim_self.argtypes = [
-        POINTER(POINTER(c_int)),
-        POINTER(c_double),
-        POINTER(c_double), c_int, c_int,
-        POINTER(POINTER(POINTER(c_double))),
-        POINTER(POINTER(POINTER(c_double))),
-        c_int, c_double, c_double
-    ]
-    calculate_tacsim_self.restype = c_int
+    else:
+        ## Calculate similarity of two attributed graphs
+        calculate_tacsim = libc.calculate_tacsim
+        calculate_tacsim.argtypes = [
+            POINTER(POINTER(c_int)),
+            POINTER(c_double),
+            POINTER(c_double), c_int, c_int,
+            POINTER(POINTER(c_int)),
+            POINTER(c_double),
+            POINTER(c_double), c_int, c_int,
+            POINTER(POINTER(POINTER(c_double))),
+            POINTER(POINTER(POINTER(c_double))),
+            c_int, c_double, c_double
+        ]
+        calculate_tacsim.restype = c_int
 
-    # Convert graph attributes to ctypes
-    nnadj, nwgt, ewgt, nlen, elen = graph_properties(G,
-        node_attribute, edge_attribute, min_node_weight, min_edge_weight)
+        nnadj, nwgt, ewgt, nlen, elen = graph_properties(G1,
+            node_attribute, edge_attribute, min_node_weight, min_edge_weight)
+        nnadj2, nwgt2, ewgt2, nlen2, elen2 = graph_properties(G2,
+            node_attribute, edge_attribute, min_node_weight, min_edge_weight)
 
-    nsim = POINTER(POINTER(c_double))()
-    esim = POINTER(POINTER(c_double))()
+        calculate_tacsim(
+            matrix_to_cpointer(nnadj, (nlen, nlen), dtype=c_int),
+            vector_to_cpointer(nwgt, nlen, dtype=c_double),
+            vector_to_cpointer(ewgt, elen, dtype=c_double),
+            c_int(nlen), c_int(elen),
+            matrix_to_cpointer(nnadj2, (nlen2, nlen2), dtype=c_int),
+            vector_to_cpointer(nwgt2, nlen2, dtype=c_double),
+            vector_to_cpointer(ewgt2, elen2, dtype=c_double),
+            c_int(nlen2), c_int(elen2),
+            byref(nsim), byref(esim),
+            c_int(max_iter), c_double(eps), c_double(tol)
+        )
 
-    calculate_tacsim_self(
-        matrix_to_cpointer(nnadj, (nlen, nlen), dtype=c_int),
-        vector_to_cpointer(nwgt, nlen, dtype=c_double),
-        vector_to_cpointer(ewgt, elen, dtype=c_double),
-        c_int(nlen), c_int(elen),
-        byref(nsim), byref(esim),
-        c_int(max_iter), c_double(eps), c_double(tol)
-    )
-
-    nsim2 = cpointer_to_matrix(nsim, (nlen, nlen))
-    esim2 = cpointer_to_matrix(esim, (elen, elen))
+        nsim2 = cpointer_to_matrix(nsim, (nlen, nlen2))
+        esim2 = cpointer_to_matrix(esim, (elen, elen2))
 
     return nsim2, esim2
 
@@ -177,10 +175,7 @@ def tacsim_combined_in_C(G1, G2=None, node_attribute='weight', edge_attribute='w
     """ Combined similarity based on original tacsim scores. Refer to paper Mesos.
     """
     # X: node similarity; Y: edge similarity
-    if G2 is None:
-        X, Y = tacsim_self_in_C(G1, node_attribute, edge_attribute)
-    else:
-        X, Y = tacsim_in_C(G1, G2, node_attribute, edge_attribute)
+    X, Y = tacsim_in_C(G1, G2, node_attribute, edge_attribute)
 
     As, At = node_edge_adjacency(G1)
     if G2 is None:
@@ -212,7 +207,7 @@ if __name__ == '__main__':
 
     print tacsim_in_C(G1, G2)
 
-    print tacsim_self_in_C(G1)
+    print tacsim_in_C(G1)
 
     print tacsim_combined_in_C(G1, G2)
 

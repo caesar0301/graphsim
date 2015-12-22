@@ -9,6 +9,16 @@ Graph similarity algorithms based on NetworkX.
 Install
 -------
 
+First, install building tool:
+
+    $ yum install -y scons
+
+On Mac OS:
+
+    $ brew install scons
+
+Then install graphsim via PyPI:
+
     $ pip install -U graphsim
 
 
@@ -28,10 +38,9 @@ Supported algorithms
 * `gs.simrank`: A Measure of Structural-Context Similarity, by Jeh et al.
 * `gs.simrank_bipartite`: SimRank for bipartite graphs, by Jeh et al.
 * `gs.tacsim`: Topology-Attributes Coupling Similarity, by Xiaming Chen et al.
-* `gs.tacsim_self`: calculate the self-similarity via TACSim.
 * `gs.tacsim_combined`: A combined topology-attributes coupling similarity, by Xiaming Chen et al.
 * `gs.tacsim_in_C`: an efficient implementation of TACSim in pure C.
-* `gs.tacsim_self_in_C`: an efficient implementation of self-similarity via TACSim in C.
+* `gs.tacsim_combined_in_C`: an efficient implementation of combined TACSim in pure C.
 
 
 Supported utilities

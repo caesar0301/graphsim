@@ -15,7 +15,7 @@ from typedecorator import params
 __author__ = "Xiaming Chen"
 __email__ = "chen_xm@sjtu.edu.cn"
 
-__all__ = [ 'tacsim', 'tacsim_self', 'tacsim_combined', 'normalized', 'node_edge_adjacency' ]
+__all__ = [ 'tacsim', 'tacsim_combined', 'normalized', 'node_edge_adjacency' ]
 
 
 def _strength_nodes(nw1, nw2, ew):
@@ -37,7 +37,7 @@ def _converged(nsim, nsim_prev, esim, esim_prev, eps=1e-4):
     return False
 
 
-def normalized(a, axis=None, order=2):
+def normalized(a, axis=None, order=None):
     l2 = np.atleast_1d(np.linalg.norm(a, order, axis))
     l2[l2==0] = 1
     return a / l2
@@ -184,12 +184,6 @@ def tacsim(G1, G2=None, node_attribute='weight', edge_attribute='weight', max_it
     return _mask_lower_values(nsim, tol), _mask_lower_values(esim, tol)
 
 
-def tacsim_self(G, node_attribute='weight', edge_attribute='weight', max_iter=100, eps=1e-4, tol=1e-6):
-    """ Calculate the self-similarity with TACSim
-    """
-    return tacsim(G, None, node_attribute, edge_attribute, max_iter, eps, tol)
-
-
 @params(G=nx.DiGraph)
 def node_edge_adjacency(G):
     """ Node-edge adjacency matrix: source nodes
@@ -246,6 +240,6 @@ if __name__ == '__main__':
     G2.node[2]['weight'] = 1
 
     print tacsim(G1, G2)
-    print tacsim_self(G1)
+    print tacsim(G1)
 
     print tacsim_combined(G1, G2)
