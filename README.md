@@ -56,4 +56,4 @@ Supported utilities
 Author
 ------
 
-Xiaming Chen <chen@xiaming.me>
+Xiaming Chen <chenxm35@gmail.com>
