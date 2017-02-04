@@ -55,12 +55,13 @@ Supported utilities
 Citation
 ----------
 
-```latex
+```tex
 @article{Chen2017_mesos,
-title = "Discovering and Modeling Meta-Structures in Human Behavior from City-Scale Cellular Data",
-journal = "Pervasive and Mobile Computing ",
-year = "2017",
-author = "Xiaming Chen and Haiyang Wang and Siwei Qiang and Yongkun Wang and Yaohui Jin",
+  title = "Discovering and Modeling Meta-Structures in Human Behavior from City-Scale Cellular Data",
+  journal = "Pervasive and Mobile Computing ",
+  year = "2017",
+  author = "Xiaming Chen and Haiyang Wang and Siwei Qiang and Yongkun Wang and Yaohui Jin"
+}
 ```
 
 Author
