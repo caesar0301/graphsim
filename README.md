@@ -52,6 +52,16 @@ Supported utilities
 * `gs.normalized`: L2 normalization of vectors, matrices or arrays.
 * `gs.node_edge_adjacency`: Obtain node-edge adjacency matrices in source and dest directions.
 
+Citation
+----------
+
+```latex
+@article{Chen2017_mesos,
+title = "Discovering and Modeling Meta-Structures in Human Behavior from City-Scale Cellular Data",
+journal = "Pervasive and Mobile Computing ",
+year = "2017",
+author = "Xiaming Chen and Haiyang Wang and Siwei Qiang and Yongkun Wang and Yaohui Jin",
+```
 
 Author
 ------
