@@ -56,10 +56,12 @@ Citation
 ----------
 
 ```tex
-@article{Chen2017_mesos,
-  title = "Discovering and Modeling Meta-Structures in Human Behavior from City-Scale Cellular Data",
+@article{Chen2017,
+  title = "Discovering and modeling meta-structures in human behavior from city-scale cellular data ",
   journal = "Pervasive and Mobile Computing ",
   year = "2017",
+  issn = "1574-1192",
+  doi = "http://dx.doi.org/10.1016/j.pmcj.2017.02.001",
   author = "Xiaming Chen and Haiyang Wang and Siwei Qiang and Yongkun Wang and Yaohui Jin"
 }
 ```
