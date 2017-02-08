@@ -57,7 +57,7 @@ Citation
 
 ```tex
 @article{Chen2017,
-  title = "Discovering and modeling meta-structures in human behavior from city-scale cellular data ",
+  title = "Discovering and modeling meta-structures in human behavior from city-scale cellular data",
   journal = "Pervasive and Mobile Computing ",
   year = "2017",
   issn = "1574-1192",
