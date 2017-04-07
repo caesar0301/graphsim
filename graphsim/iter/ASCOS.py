@@ -87,7 +87,7 @@ def ascos(G, c=0.9, max_iter=100, is_weighted=False, remove_neighbors=False, rem
         sim_old = copy.deepcopy(sim)
         for i in range(n):
             if dump_process:
-                print iter_ctr, ':', i, '/', n
+                print(iter_ctr, ':', i, '/', n)
             for j in range(n):
                 if not is_weighted:
                     if i == j:

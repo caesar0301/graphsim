@@ -21,7 +21,7 @@ def normalized(a, axis=0, order=2):
     return a / np.expand_dims(l2, axis)
 
 
-@params(G=nx.DiGraph, max_iter=long, eps=float)
+@params(G=nx.DiGraph, max_iter=int, eps=float)
 def hits(G, max_iter=100, eps=1e-4):
     """HITS algorithm:
     calculate the hub and authority scores for nodes in a graph.
@@ -58,4 +58,4 @@ def hits(G, max_iter=100, eps=1e-4):
 if __name__ == '__main__':
     G = nx.DiGraph()
     G.add_edges_from([(1,4), (1,5), (1,6), (2,5), (2,7), (3,4), (3,5), (3,6), (3,7)])
-    print hits(G)
+    print(hits(G))
