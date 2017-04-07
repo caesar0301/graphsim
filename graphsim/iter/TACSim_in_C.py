@@ -205,9 +205,9 @@ if __name__ == '__main__':
     G2.node[1]['weight'] = 3
     G2.node[2]['weight'] = 1
 
-    print tacsim_in_C(G1, G2)
+    print(tacsim_in_C(G1, G2))
 
-    print tacsim_in_C(G1)
+    print(tacsim_in_C(G1))
 
-    print tacsim_combined_in_C(G1, G2)
+    print(tacsim_combined_in_C(G1, G2))
 

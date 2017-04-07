@@ -18,7 +18,7 @@ __email__ = "chen_xm@sjtu.edu.cn"
 __all__ = [ 'simrank', 'simrank_bipartite' ]
 
 
-@params(G=nx.Graph, r=float, max_iter=long, eps=float)
+@params(G=nx.Graph, r=float, max_iter=int, eps=float)
 def simrank(G, r=0.8, max_iter=100, eps=1e-4):
     """ Algorithm of G. Jeh and J. Widom. SimRank: A Measure
     of Structural-Context Similarity. In KDD'02.
@@ -68,7 +68,7 @@ def simrank(G, r=0.8, max_iter=100, eps=1e-4):
     return sim
 
 
-@params(G=nx.DiGraph, r=float, max_iter=long, eps=float)
+@params(G=nx.DiGraph, r=float, max_iter=int, eps=float)
 def simrank_bipartite(G, r=0.8, max_iter=100, eps=1e-4):
     """ A bipartite version in the paper.
     """
