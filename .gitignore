@@ -1,2 +1,12 @@
 *.DS_Store
 *.pyc
+*.o
+*.so
+*.a
+*.os
+*.egg-info
+*.dblite
+.idea
+build
+dist
+

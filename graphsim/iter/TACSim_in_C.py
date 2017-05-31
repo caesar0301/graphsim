@@ -4,7 +4,7 @@ import networkx as nx
 from ctypes import *
 import ctypes.util
 
-from TACSim import node_edge_adjacency, normalized
+from .TACSim import node_edge_adjacency, normalized
 
 
 __all__ = ['tacsim_in_C', 'tacsim_combined_in_C']

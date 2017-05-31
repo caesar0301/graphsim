@@ -4,11 +4,12 @@ from setuptools import setup, find_packages
 # build libtacsim automatically
 rootdir = os.path.dirname(os.path.realpath('__file__'))
 moddir = os.path.join(rootdir, 'libtacsim')
-os.system('cd %s; scons install; cd -' % moddir)
+os.system('cd %s; sudo scons install; cd -' % moddir)
 
-from graphsim import __version__
-from graphsim import __author__
-from graphsim import __email__
+__version__ = '0.2.7'
+__author__ = 'Xiaming Chen'
+__email__ = 'chenxm35@gmail.com'
+
 
 setup(
     name = "graphsim",
@@ -21,6 +22,11 @@ setup(
     license = "BSC License",
     packages = find_packages(),
     keywords = ['graph', 'graph similarity', 'graph matching'],
+    install_requires=[
+        'networkx',
+        'numpy',
+        'typedecorator'
+    ],
     classifiers = [
         'Development Status :: 4 - Beta',
         'Environment :: Console',
