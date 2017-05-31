@@ -3,7 +3,9 @@ graphsim
 
 Graph similarity algorithms based on NetworkX.
 
-**BSD License**
+**BSD Licensed** 
+
+[![Build Status](https://travis-ci.org/caesar0301/graphsim.svg?branch=master)](https://travis-ci.org/caesar0301/graphsim)
 
 
 Install
