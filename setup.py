@@ -4,9 +4,9 @@ from setuptools import setup, find_packages
 # build libtacsim automatically
 rootdir = os.path.dirname(os.path.realpath('__file__'))
 moddir = os.path.join(rootdir, 'libtacsim')
-os.system('cd %s; sudo scons install; cd -' % moddir)
+os.system('cd %s; scons install; cd -' % moddir)
 
-__version__ = '0.2.7'
+__version__ = '0.2.8'
 __author__ = 'Xiaming Chen'
 __email__ = 'chenxm35@gmail.com'
 
@@ -34,9 +34,7 @@ setup(
             'License :: Freely Distributable',
             'Operating System :: OS Independent',
             'Programming Language :: Python',
-            'Programming Language :: Python :: 2.6',
             'Programming Language :: Python :: 2.7',
-            'Programming Language :: Python :: 3.2',
             'Programming Language :: Python :: 3.3',
             'Programming Language :: Python :: 3.4',
             'Topic :: Software Development :: Libraries :: Python Modules',

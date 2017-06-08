@@ -23,8 +23,10 @@ Then install graphsim via PyPI:
 
     $ pip install -U graphsim
 
+**Permission Issue:** `sudo` is required to give permission to install cpp modules into /usr/local/{lib,include}. 
 
-**NOTE**: `libtacsim` was tested on Ubuntu 12.04, CentOS 6.5 and Mac OS 10.11.2.
+
+**NOTE**: `libtacsim` was tested on Ubuntu 12.04, Ubuntu 16.04, CentOS 6.5 and Mac OS 10.11.2.
 
 
 Usage
