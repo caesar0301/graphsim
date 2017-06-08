@@ -11,4 +11,4 @@ install:
   - "sudo python setup.py install"
 
 script:
-  - /usr/bin/env python tests/test_gs.py
+  - python tests/test_gs.py
