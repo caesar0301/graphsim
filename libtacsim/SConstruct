@@ -5,6 +5,8 @@ import sys
 import shutil
 
 libdir = os.path.dirname(os.path.realpath('__file__'))
+install_lib_dir = os.getenv('LIBTACSIM_LIB_DIR', '/usr/local/lib/')
+install_inc_dir = os.getenv('LIBTACSIM_INC_DIR', '/usr/local/include/')
 
 prgname = 'test_tacsim'
 libname = 'libtacsim'
@@ -19,6 +21,6 @@ srcfiles.append(os.path.join(libdir, 'libtacsim/main.c'))
 exeutil = env.Program(prgname, srcfiles, LIBS=['m'])
 
 ## install
-env.Alias('install', env.Install('/usr/local/lib/', staticlib))
-env.Alias('install', env.Install('/usr/local/lib/', sharedlib))
-shutil.copy(os.path.join(libdir, 'libtacsim/tacsim.h'), '/usr/local/include/')
+env.Alias('install', env.Install(install_lib_dir, staticlib))
+env.Alias('install', env.Install(install_lib_dir, sharedlib))
+shutil.copy(os.path.join(libdir, 'libtacsim/tacsim.h'), install_inc_dir)

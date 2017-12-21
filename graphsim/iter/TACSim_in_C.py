@@ -1,11 +1,12 @@
-import sys
-import numpy as np
-import networkx as nx
-from ctypes import *
 import ctypes.util
+import os
+from ctypes import *
+
+import networkx as nx
+import numpy as np
+import sys
 
 from .TACSim import node_edge_adjacency, normalized
-
 
 __all__ = ['tacsim_in_C', 'tacsim_combined_in_C']
 
@@ -15,10 +16,11 @@ def find_clib():
     tacsimlib = ctypes.util.find_library('tacsim')
     if not tacsimlib:
         try:
-            libc = ctypes.cdll.LoadLibrary('/usr/local/lib/libtacsim.so')
+            install_lib_dir = os.getenv('LIBTACSIM_LIB_DIR', '/usr/local/lib/')
+            libc = ctypes.cdll.LoadLibrary(os.path.join(install_lib_dir, 'libtacsim.so'))
             libc.tacsim
         except:
-            raise "Can't find libtacsim. Please install it first."
+            raise RuntimeError("Can't find libtacsim. Please install it first.")
             sys.exit(-1)
     else:
         libc = CDLL(tacsimlib, mode=ctypes.RTLD_GLOBAL)
@@ -26,7 +28,7 @@ def find_clib():
 
 
 def graph_properties(G, node_attribute='weight', edge_attribute='weight',
-    min_node_weight=1e-4, min_edge_weight=1e-4):
+                     min_node_weight=1e-4, min_edge_weight=1e-4):
     nodes = G.nodes()
     edges = G.edges()
     V = len(nodes)
@@ -67,6 +69,7 @@ def matrix_to_cpointer(arr, shape, dtype=c_double):
 
     return ptr
 
+
 def vector_to_cpointer(vec, vlen, dtype=c_double):
     DTARR = dtype * vlen
     ptr = DTARR()
@@ -94,9 +97,8 @@ def cpointer_to_ndarray(ptr, size, dtype, shape):
 
 
 def tacsim_in_C(G1, G2=None, node_attribute='weight', edge_attribute='weight',
-    min_node_weight=1e-4, min_edge_weight=1e-4,
-    max_iter=100, eps=1e-4, tol=1e-6):
-
+                min_node_weight=1e-4, min_edge_weight=1e-4,
+                max_iter=100, eps=1e-4, tol=1e-6):
     libc = find_clib()
 
     nsim = POINTER(POINTER(c_double))()
@@ -117,7 +119,8 @@ def tacsim_in_C(G1, G2=None, node_attribute='weight', edge_attribute='weight',
 
         # Convert graph attributes to ctypes
         nnadj, nwgt, ewgt, nlen, elen = graph_properties(G1,
-            node_attribute, edge_attribute, min_node_weight, min_edge_weight)
+                                                         node_attribute, edge_attribute, min_node_weight,
+                                                         min_edge_weight)
 
         calculate_tacsim_self(
             matrix_to_cpointer(nnadj, (nlen, nlen), dtype=c_int),
@@ -148,9 +151,11 @@ def tacsim_in_C(G1, G2=None, node_attribute='weight', edge_attribute='weight',
         calculate_tacsim.restype = c_int
 
         nnadj, nwgt, ewgt, nlen, elen = graph_properties(G1,
-            node_attribute, edge_attribute, min_node_weight, min_edge_weight)
+                                                         node_attribute, edge_attribute, min_node_weight,
+                                                         min_edge_weight)
         nnadj2, nwgt2, ewgt2, nlen2, elen2 = graph_properties(G2,
-            node_attribute, edge_attribute, min_node_weight, min_edge_weight)
+                                                              node_attribute, edge_attribute, min_node_weight,
+                                                              min_edge_weight)
 
         calculate_tacsim(
             matrix_to_cpointer(nnadj, (nlen, nlen), dtype=c_int),
@@ -171,7 +176,7 @@ def tacsim_in_C(G1, G2=None, node_attribute='weight', edge_attribute='weight',
     return nsim2, esim2
 
 
-def tacsim_combined_in_C(G1, G2=None, node_attribute='weight', edge_attribute='weight', lamb = 0.5, norm=True):
+def tacsim_combined_in_C(G1, G2=None, node_attribute='weight', edge_attribute='weight', lamb=0.5, norm=True):
     """ Combined similarity based on original tacsim scores. Refer to paper Mesos.
     """
     # X: node similarity; Y: edge similarity
@@ -183,7 +188,7 @@ def tacsim_combined_in_C(G1, G2=None, node_attribute='weight', edge_attribute='w
     else:
         Bs, Bt = node_edge_adjacency(G2)
 
-    Z = Y + lamb * np.dot(np.dot(As.T, X), Bs) + (1-lamb) * np.dot(np.dot(At.T, X), Bt)
+    Z = Y + lamb * np.dot(np.dot(As.T, X), Bs) + (1 - lamb) * np.dot(np.dot(At.T, X), Bt)
 
     if norm:
         return normalized(Z)
@@ -193,14 +198,14 @@ def tacsim_combined_in_C(G1, G2=None, node_attribute='weight', edge_attribute='w
 
 if __name__ == '__main__':
     G1 = nx.DiGraph()
-    G1.add_weighted_edges_from([(1,0,8), (0,2,12), (1,2,10), (2,3,15)])
+    G1.add_weighted_edges_from([(1, 0, 8), (0, 2, 12), (1, 2, 10), (2, 3, 15)])
     G1.node[0]['weight'] = 1
     G1.node[1]['weight'] = 1
     G1.node[2]['weight'] = 5
     G1.node[3]['weight'] = 1
 
     G2 = nx.DiGraph()
-    G2.add_weighted_edges_from([(0,1,15), (1,2,10)])
+    G2.add_weighted_edges_from([(0, 1, 15), (1, 2, 10)])
     G2.node[0]['weight'] = 1
     G2.node[1]['weight'] = 3
     G2.node[2]['weight'] = 1
@@ -210,4 +215,3 @@ if __name__ == '__main__':
     print(tacsim_in_C(G1))
 
     print(tacsim_combined_in_C(G1, G2))
-
