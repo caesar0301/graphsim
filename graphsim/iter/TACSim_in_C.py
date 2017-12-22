@@ -1,10 +1,9 @@
 import ctypes.util
-import os
 from ctypes import *
 
 import networkx as nx
 import numpy as np
-import sys
+import os
 
 from .TACSim import node_edge_adjacency, normalized
 
@@ -12,16 +11,14 @@ __all__ = ['tacsim_in_C', 'tacsim_combined_in_C']
 
 
 def find_clib():
-    ## Find and load tacsim library
+    # Find and load tacsim library
     tacsimlib = ctypes.util.find_library('tacsim')
     if not tacsimlib:
         try:
             install_lib_dir = os.getenv('LIBTACSIM_LIB_DIR', '/usr/local/lib/')
-            libc = ctypes.cdll.LoadLibrary(os.path.join(install_lib_dir, 'libtacsim.so'))
-            libc.tacsim
+            ctypes.cdll.LoadLibrary(os.path.join(install_lib_dir, 'libtacsim.so'))
         except:
             raise RuntimeError("Can't find libtacsim. Please install it first.")
-            sys.exit(-1)
     else:
         libc = CDLL(tacsimlib, mode=ctypes.RTLD_GLOBAL)
     return libc
@@ -105,7 +102,7 @@ def tacsim_in_C(G1, G2=None, node_attribute='weight', edge_attribute='weight',
     esim = POINTER(POINTER(c_double))()
 
     if G2 is None:
-        ## Calculate self-similarity of an attributed graph
+        # Calculate self-similarity of an attributed graph
         calculate_tacsim_self = libc.calculate_tacsim_self
         calculate_tacsim_self.argtypes = [
             POINTER(POINTER(c_int)),
@@ -135,7 +132,7 @@ def tacsim_in_C(G1, G2=None, node_attribute='weight', edge_attribute='weight',
         esim2 = cpointer_to_matrix(esim, (elen, elen))
 
     else:
-        ## Calculate similarity of two attributed graphs
+        # Calculate similarity of two attributed graphs
         calculate_tacsim = libc.calculate_tacsim
         calculate_tacsim.argtypes = [
             POINTER(POINTER(c_int)),

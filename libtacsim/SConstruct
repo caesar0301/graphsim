@@ -1,18 +1,26 @@
 # Compile and install libtacsim.
 # Copyright Xiaming Chen <chen@xiaming.me>
-import os
-import sys
 import shutil
 
+import os
+
+# Scan and prepare destination folder
 libdir = os.path.dirname(os.path.realpath('__file__'))
 install_lib_dir = os.getenv('LIBTACSIM_LIB_DIR', '/usr/local/lib/')
 install_inc_dir = os.getenv('LIBTACSIM_INC_DIR', '/usr/local/include/')
 
+if not os.path.exists(install_lib_dir):
+    os.makedirs(install_lib_dir)
+
+if not os.path.exists(install_inc_dir):
+    os.makedirs(install_inc_dir)
+
+# Compile shared libs
 prgname = 'test_tacsim'
 libname = 'libtacsim'
 srcfiles = [os.path.join(libdir, 'libtacsim/tacsim.c')]
 
-env = Environment(CCFLAGS = ['-std=c99', '-Wall', '-O2', '-g'])
+env = Environment(CCFLAGS=['-std=c99', '-Wall', '-O2', '-g'])
 
 staticlib = env.Library(libname, srcfiles)
 sharedlib = env.SharedLibrary(libname, srcfiles)
@@ -20,7 +28,7 @@ sharedlib = env.SharedLibrary(libname, srcfiles)
 srcfiles.append(os.path.join(libdir, 'libtacsim/main.c'))
 exeutil = env.Program(prgname, srcfiles, LIBS=['m'])
 
-## install
+# Install
 env.Alias('install', env.Install(install_lib_dir, staticlib))
 env.Alias('install', env.Install(install_lib_dir, sharedlib))
 shutil.copy(os.path.join(libdir, 'libtacsim/tacsim.h'), install_inc_dir)

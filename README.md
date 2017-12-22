@@ -22,9 +22,33 @@ On Mac OS:
 Then install graphsim via PyPI:
 
     $ pip install -U graphsim
+    
 
-**Permission Issue:** `sudo` is required to give permission to install cpp modules into /usr/local/{lib,include}. 
+Permission Issues
+------------------
 
+By default, `sudo` is required to give permission to install cpp modules into system `/usr/local/{lib,include}`. 
+
+If you prefer local installation, following instructions may help you:
+
+```bash
+export LIBTACSIM_LIB_DIR=~/usr/lib/
+export LIBTACSIM_INC_DIR=~/usr/include/
+
+pip install -U graphsim
+```
+
+Make sure that the local directories are aware for C linkers:
+
+```bash
+export LD_LIBRARY_PATH=~/usr/lib:$LD_LIBRARY_PATH
+export C_INCLUDE_PATH=~/usr/include:$C_INCLUDE_PATH
+export CPLUS_INCLUDE_PATH=~/usr/include:$CPLUS_INCLUDE_PATH
+```
+
+
+Coverage
+---------
 
 **NOTE**: `libtacsim` was tested on Ubuntu 12.04, Ubuntu 16.04, CentOS 6.5 and Mac OS 10.11.2.
 

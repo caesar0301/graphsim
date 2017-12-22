@@ -1,4 +1,5 @@
 import networkx as nx
+
 import graphsim as gs
 
 if __name__ == '__main__':

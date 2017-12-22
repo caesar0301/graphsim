@@ -1,14 +1,16 @@
 import os
 from setuptools import setup, find_packages
 
-# build libtacsim automatically
-rootdir = os.path.dirname(os.path.realpath('__file__'))
-moddir = os.path.join(rootdir, 'libtacsim')
-os.system('cd %s; scons install; cd -' % moddir)
-
 __version__ = '0.2.9'
 __author__ = 'Xiaming Chen'
 __email__ = 'chenxm35@gmail.com'
+
+# build libtacsim automatically
+rootdir = os.path.dirname(os.path.realpath('__file__'))
+moddir = os.path.join(rootdir, 'libtacsim')
+res = os.system('cd %s && scons install && cd -' % moddir)
+if res > 0:
+    raise RuntimeError('Failed to build libtacsim.')
 
 setup(
     name="graphsim",
@@ -22,9 +24,9 @@ setup(
     packages=find_packages(),
     keywords=['graph', 'graph similarity', 'graph matching'],
     install_requires=[
-        'networkx',
-        'numpy',
-        'typedecorator'
+        'networkx==1.11',
+        'numpy>=1.13',
+        'typedecorator>=0.0.4'
     ],
     classifiers=[
         'Development Status :: 4 - Beta',
