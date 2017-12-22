@@ -16,7 +16,7 @@ def find_clib():
     if not tacsimlib:
         try:
             install_lib_dir = os.getenv('LIBTACSIM_LIB_DIR', '/usr/local/lib/')
-            ctypes.cdll.LoadLibrary(os.path.join(install_lib_dir, 'libtacsim.so'))
+            libc = ctypes.cdll.LoadLibrary(os.path.join(install_lib_dir, 'libtacsim.so'))
         except:
             raise RuntimeError("Can't find libtacsim. Please install it first.")
     else:
