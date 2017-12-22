@@ -7,8 +7,13 @@ python:
   - "3.5"
   
 install:
-  - "sudo apt-get install -y scons"
-  - "sudo python setup.py install"
+  - sudo apt-get install -y scons
+  - export LIBTACSIM_LIB_DIR=~/usr/lib/
+  - export LIBTACSIM_INC_DIR=~/usr/include/
+  - export LD_LIBRARY_PATH=~/usr/lib:$LD_LIBRARY_PATH
+  - export C_INCLUDE_PATH=~/usr/include:$C_INCLUDE_PATH
+  - export CPLUS_INCLUDE_PATH=~/usr/include:$CPLUS_INCLUDE_PATH
+  - python setup.py install
 
 script:
   - python tests/test_gs.py
