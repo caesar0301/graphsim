@@ -50,7 +50,7 @@ export CPLUS_INCLUDE_PATH=~/usr/include:$CPLUS_INCLUDE_PATH
 Coverage
 ---------
 
-**NOTE**: `libtacsim` was tested on Ubuntu 12.04, Ubuntu 16.04, CentOS 6.5 and Mac OS 10.11.2.
+**NOTE**: `libtacsim` was tested on Ubuntu 12.04, Ubuntu 16.04, CentOS 6.5 and Mac OS 10.11.2, 10.13.2.
 
 
 Usage
