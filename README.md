@@ -6,7 +6,9 @@ Graph similarity algorithms based on NetworkX.
 **BSD Licensed** 
 
 [![Build Status](https://travis-ci.org/caesar0301/graphsim.svg?branch=master)](https://travis-ci.org/caesar0301/graphsim)
-
+[![PyPI](https://img.shields.io/pypi/l/graphsim.svg)](https://pypi.python.org/pypi/graphsim)
+[![PyPI](https://img.shields.io/pypi/pyversions/graphsim.svg)](https://pypi.python.org/pypi/graphsim)
+[![PyPI](https://img.shields.io/pypi/status/graphsim.svg)](https://pypi.python.org/pypi/graphsim)
 
 Install
 -------
