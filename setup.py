@@ -1,7 +1,7 @@
 import os
 from setuptools import setup, find_packages
 
-__version__ = '0.2.11'
+__version__ = '0.2.12'
 __author__ = 'Xiaming Chen'
 __email__ = 'chenxm35@gmail.com'
 
@@ -32,7 +32,7 @@ setup(
         'Development Status :: 4 - Beta',
         'Intended Audience :: Developers',
         'Intended Audience :: Science/Research',
-        'License :: BSD',
+	'License :: OSI Approved :: BSD License',
         'Operating System :: MacOS',
         'Operating System :: Unix',
         'Programming Language :: C',
