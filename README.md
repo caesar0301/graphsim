@@ -64,14 +64,14 @@ Usage
 Supported algorithms
 --------------------
 
-* `gs.ascos`: Asymmetric network Structure COntext Similarity, by Hung-Hsuan Chen et al.
-* `gs.nsim_bvd04`: node-node similarity matrix, by Blondel et al.
-* `gs.hits`: the hub and authority scores for nodes, by Kleinberg.
-* `gs.nsim_hs03`: node-node similarity with mismatch penalty, by Heymans et al.
-* `gs.simrank`: A Measure of Structural-Context Similarity, by Jeh et al.
-* `gs.simrank_bipartite`: SimRank for bipartite graphs, by Jeh et al.
-* `gs.tacsim`: Topology-Attributes Coupling Similarity, by Xiaming Chen et al.
-* `gs.tacsim_combined`: A combined topology-attributes coupling similarity, by Xiaming Chen et al.
+* `gs.ascos`: Asymmetric network Structure COntext Similarity, by Hung-Hsuan Chen et al. [[paper](https://ieeexplore.ieee.org/document/6785743)]
+* `gs.nsim_bvd04`: node-node similarity matrix, by Blondel et al. [[paper](https://dl.acm.org/citation.cfm?id=1035557)]
+* `gs.hits`: the hub and authority scores for nodes, by Kleinberg. [[paper](https://dl.acm.org/citation.cfm?id=324140)]
+* `gs.nsim_hs03`: node-node similarity with mismatch penalty, by Heymans et al. [[paper](https://www.ncbi.nlm.nih.gov/pubmed/12855450)]
+* `gs.simrank`: A Measure of Structural-Context Similarity, by Jeh et al. [[paper](https://dl.acm.org/citation.cfm?id=775126)]
+* `gs.simrank_bipartite`: SimRank for bipartite graphs, by Jeh et al. [[paper](https://dl.acm.org/citation.cfm?id=775126)]
+* `gs.tacsim`: Topology-Attributes Coupling Similarity, by Chen et al. [[paper](http://dx.doi.org/10.1016/j.pmcj.2017.02.001)]
+* `gs.tacsim_combined`: A combined topology-attributes coupling similarity, by Chen et al. [[paper](http://dx.doi.org/10.1016/j.pmcj.2017.02.001)]
 * `gs.tacsim_in_C`: an efficient implementation of TACSim in pure C.
 * `gs.tacsim_combined_in_C`: an efficient implementation of combined TACSim in pure C.
 
