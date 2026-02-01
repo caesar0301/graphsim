@@ -1,17 +1,14 @@
-graphsim
---------
+# graphsim
 
 Graph similarity algorithms based on NetworkX.
 
 **BSD Licensed** 
 
-[![Build Status](https://travis-ci.org/caesar0301/graphsim.svg?branch=master)](https://travis-ci.org/caesar0301/graphsim)
 [![PyPI](https://img.shields.io/pypi/l/graphsim.svg)](https://pypi.python.org/pypi/graphsim)
 [![PyPI](https://img.shields.io/pypi/pyversions/graphsim.svg)](https://pypi.python.org/pypi/graphsim)
 [![PyPI](https://img.shields.io/pypi/status/graphsim.svg)](https://pypi.python.org/pypi/graphsim)
 
-Install
--------
+## Install
 
 First, install building tool:
 
@@ -26,8 +23,7 @@ Then install graphsim via PyPI:
     $ pip install -U graphsim
     
 
-Permission Issues
-------------------
+## Permission Issues
 
 By default, `sudo` is required to give permission to install cpp modules into system `/usr/local/{lib,include}`. 
 
@@ -49,20 +45,17 @@ export CPLUS_INCLUDE_PATH=~/usr/include:$CPLUS_INCLUDE_PATH
 ```
 
 
-Coverage
----------
+## Coverage
 
 **NOTE**: `libtacsim` was tested on Ubuntu 12.04, Ubuntu 16.04, CentOS 6.5 and Mac OS 10.11.2, 10.13.2.
 
 
-Usage
------
+## Usage
 
     >>> import graphsim as gs
 
 
-Supported algorithms
---------------------
+## Supported algorithms
 
 * `gs.ascos`: Asymmetric network Structure COntext Similarity, by Hung-Hsuan Chen et al. [[paper](https://ieeexplore.ieee.org/document/6785743)]
 * `gs.nsim_bvd04`: node-node similarity matrix, by Blondel et al. [[paper](https://dl.acm.org/citation.cfm?id=1035557)]
@@ -76,14 +69,12 @@ Supported algorithms
 * `gs.tacsim_combined_in_C`: an efficient implementation of combined TACSim in pure C.
 
 
-Supported utilities
--------------------
+## Supported utilities
 
 * `gs.normalized`: L2 normalization of vectors, matrices or arrays.
 * `gs.node_edge_adjacency`: Obtain node-edge adjacency matrices in source and dest directions.
 
-Citation
-----------
+## Citation
 
 ```tex
 @article{Chen2017,
@@ -95,6 +86,10 @@ Citation
   author = "Xiaming Chen and Haiyang Wang and Siwei Qiang and Yongkun Wang and Yaohui Jin"
 }
 ```
+
+## Trend
+
+[![Star History Chart](https://api.star-history.com/svg?repos=caesar0301/graphsim&type=Date)](https://star-history.com/#caesar0301/graphsim&Date)
 
 Author
 ------
